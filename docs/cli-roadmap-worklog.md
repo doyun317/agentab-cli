@@ -568,3 +568,27 @@
 - `tab list` 공개 asset smoke 이슈 재현 및 원인 분석
 - `doctor`에서 `CHROME_BIN` override 노출 여부 개선
 - `v0.1.0` 실패 태그 처리 여부 결정
+
+### 2026-03-17 08:39 UTC
+
+변경:
+
+- `tab open` 직후 `tab list`가 stale 목록을 한 번 반환할 수 있는 race를 완화했다.
+- `handleTabsList`에 현재 탭이 목록에 나타날 때까지 짧게 재시도하는 로직을 추가했다.
+- `tab list` 응답에 `currentTabId`를 포함하고, 현재 탭이 목록 맨 앞에 오도록 정렬했다.
+- stale-first-list 회귀 테스트를 추가했다.
+
+이유:
+
+- 공개 release asset smoke에서 `tab open` 직후 `tab list`가 `about:blank`만 보이는 사례가 있었고, 이를 서버 레이어에서 흡수하는 편이 CLI 사용성에 더 적합했기 때문
+
+영향:
+
+- `tab list`가 막 연 현재 탭을 더 안정적으로 포함하게 되었다.
+- 목록 응답만 봐도 현재 탭을 식별하기 쉬워졌다.
+
+후속 작업:
+
+- `doctor`에서 `CHROME_BIN` override 노출 여부 개선
+- 이 수정 포함 새 patch release 필요 여부 결정
+- `v0.1.0` 실패 태그 처리 여부 결정

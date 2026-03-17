@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -257,7 +258,7 @@ func (s *Server) handleTabsList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := s.manager.Client(30 * time.Second)
-	tabs, err := client.ListTabs(r.Context(), session.InstanceID)
+	tabs, err := listTabsWithCurrentRetry(r.Context(), client, session, 2*time.Second)
 	if err != nil {
 		s.writeError(w, http.StatusBadGateway, s.errorCode(err), err, nil)
 		return
@@ -281,7 +282,21 @@ func (s *Server) handleTabsList(w http.ResponseWriter, r *http.Request) {
 			"lockExpiresAt": lock.ExpiresAt,
 		})
 	}
-	response.WriteJSON(w, http.StatusOK, response.OK(map[string]any{"tabs": out}, nil))
+	slices.SortStableFunc(out, func(a, b map[string]any) int {
+		aID, _ := a["tabId"].(string)
+		bID, _ := b["tabId"].(string)
+		if aID == session.CurrentTabID && bID != session.CurrentTabID {
+			return -1
+		}
+		if bID == session.CurrentTabID && aID != session.CurrentTabID {
+			return 1
+		}
+		return 0
+	})
+	response.WriteJSON(w, http.StatusOK, response.OK(map[string]any{
+		"tabs":         out,
+		"currentTabId": session.CurrentTabID,
+	}, nil))
 }
 
 func (s *Server) handleTabOpen(w http.ResponseWriter, r *http.Request) {
@@ -353,6 +368,37 @@ func waitForInstanceRunning(ctx context.Context, client *pinchtab.Client, instan
 		case <-time.After(250 * time.Millisecond):
 		}
 	}
+}
+
+func listTabsWithCurrentRetry(ctx context.Context, client *pinchtab.Client, session state.Session, timeout time.Duration) ([]pinchtab.TabInfo, error) {
+	deadline := time.Now().Add(timeout)
+	for {
+		tabs, err := client.ListTabs(ctx, session.InstanceID)
+		if err != nil {
+			return nil, err
+		}
+		if session.CurrentTabID == "" || containsTabID(tabs, session.CurrentTabID) || time.Now().After(deadline) {
+			return tabs, nil
+		}
+		select {
+		case <-ctx.Done():
+			return tabs, ctx.Err()
+		case <-time.After(200 * time.Millisecond):
+		}
+	}
+}
+
+func containsTabID(tabs []pinchtab.TabInfo, tabID string) bool {
+	for _, tab := range tabs {
+		id := tab.ID
+		if id == "" {
+			id = tab.TabID
+		}
+		if id == tabID {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *Server) handleTabClose(w http.ResponseWriter, r *http.Request) {

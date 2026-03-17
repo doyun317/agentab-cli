@@ -18,6 +18,8 @@ type fakePinchTab struct {
 	tabID          string
 	lastAction     map[string]any
 	instanceChecks int
+	tabListCalls   int
+	staleFirstList bool
 }
 
 func (f *fakePinchTab) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -61,12 +63,30 @@ func (f *fakePinchTab) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			"title": "Example",
 		})
 	case r.Method == http.MethodGet && r.URL.Path == "/instances/inst_1/tabs":
-		writeJSON([]map[string]any{{
-			"id":         f.tabID,
-			"instanceId": f.instanceID,
-			"url":        "https://example.com",
-			"title":      "Example",
-		}})
+		f.tabListCalls++
+		if f.staleFirstList && f.tabListCalls == 1 {
+			writeJSON([]map[string]any{{
+				"id":         "tab_blank",
+				"instanceId": f.instanceID,
+				"url":        "about:blank",
+				"title":      "about:blank",
+			}})
+			return
+		}
+		writeJSON([]map[string]any{
+			{
+				"id":         "tab_blank",
+				"instanceId": f.instanceID,
+				"url":        "about:blank",
+				"title":      "about:blank",
+			},
+			{
+				"id":         f.tabID,
+				"instanceId": f.instanceID,
+				"url":        "https://example.com",
+				"title":      "Example",
+			},
+		})
 	case r.Method == http.MethodGet && r.URL.Path == "/tabs/tab_1/snapshot":
 		writeJSON(map[string]any{"nodes": []map[string]any{{"ref": "e1", "role": "link", "name": "Example"}}})
 	case r.Method == http.MethodPost && r.URL.Path == "/tabs/tab_1/find":
@@ -150,12 +170,15 @@ func TestServerSessionAndTabFlow(t *testing.T) {
 		t.Fatalf("tabs data = %#v, want object", tabsEnv["data"])
 	}
 	tabs, ok := data["tabs"].([]any)
-	if !ok || len(tabs) != 1 {
-		t.Fatalf("tabs = %#v, want one tab", data["tabs"])
+	if !ok || len(tabs) != 2 {
+		t.Fatalf("tabs = %#v, want two tabs", data["tabs"])
 	}
 	tab, ok := tabs[0].(map[string]any)
 	if !ok || tab["tabId"] != "tab_1" {
-		t.Fatalf("tab entry = %#v, want tab_1", tabs[0])
+		t.Fatalf("first tab entry = %#v, want tab_1 as current tab", tabs[0])
+	}
+	if data["currentTabId"] != "tab_1" {
+		t.Fatalf("currentTabId = %#v, want tab_1", data["currentTabId"])
 	}
 
 	if fake.lastAction["kind"] != "click" || fake.lastAction["ref"] != "e1" {
@@ -166,6 +189,69 @@ func TestServerSessionAndTabFlow(t *testing.T) {
 	}
 	if sessions, err := store.ListSessions(); err != nil || len(sessions) != 0 {
 		t.Fatalf("store.ListSessions() = %+v, %v; want empty", sessions, err)
+	}
+}
+
+func TestServerTabsListRetriesUntilCurrentTabAppears(t *testing.T) {
+	fake := &fakePinchTab{staleFirstList: true}
+	upstream := httptest.NewServer(fake)
+	defer upstream.Close()
+
+	t.Setenv("PINCHTAB_URL", upstream.URL)
+	t.Setenv("AGENTAB_SKIP_INSTALL", "1")
+
+	store, err := state.NewStore(t.TempDir())
+	if err != nil {
+		t.Fatalf("NewStore() error = %v", err)
+	}
+	server := NewServer(store, pinchtab.NewManager(store), "secret", 0)
+	api := httptest.NewServer(server.Handler())
+	defer api.Close()
+
+	client := &http.Client{Timeout: 5 * time.Second}
+	call := func(method, path string, body any) map[string]any {
+		var payload []byte
+		if body != nil {
+			payload, _ = json.Marshal(body)
+		}
+		req, _ := http.NewRequest(method, api.URL+path, bytes.NewReader(payload))
+		req.Header.Set("Authorization", "Bearer secret")
+		if body != nil {
+			req.Header.Set("Content-Type", "application/json")
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("request %s %s error = %v", method, path, err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode >= 400 {
+			t.Fatalf("request %s %s status = %d", method, path, resp.StatusCode)
+		}
+		var env map[string]any
+		if err := json.NewDecoder(resp.Body).Decode(&env); err != nil {
+			t.Fatalf("decode %s %s error = %v", method, path, err)
+		}
+		return env
+	}
+
+	call(http.MethodPost, "/sessions/start", map[string]any{"name": "demo"})
+	call(http.MethodPost, "/sessions/demo/tabs/open", map[string]any{"url": "https://example.com"})
+	tabsEnv := call(http.MethodGet, "/sessions/demo/tabs", nil)
+
+	data, ok := tabsEnv["data"].(map[string]any)
+	if !ok {
+		t.Fatalf("tabs data = %#v, want object", tabsEnv["data"])
+	}
+	tabs, ok := data["tabs"].([]any)
+	if !ok || len(tabs) < 2 {
+		t.Fatalf("tabs = %#v, want current tab after retry", data["tabs"])
+	}
+	tab, ok := tabs[0].(map[string]any)
+	if !ok || tab["tabId"] != "tab_1" {
+		t.Fatalf("first tab entry = %#v, want tab_1 after retry", tabs[0])
+	}
+	if fake.tabListCalls < 2 {
+		t.Fatalf("tabListCalls = %d, want retry", fake.tabListCalls)
 	}
 }
 
