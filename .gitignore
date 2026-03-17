@@ -1,0 +1,5 @@
+.tools/
+agentab
+coverage.out
+*.log
+dist/
