@@ -498,3 +498,50 @@
 - `v0.1.0` 릴리스 체크리스트 실제 실행
 - 릴리스 노트 초안 작성
 - 첫 태그 릴리스 검증
+
+### 2026-03-17 08:23 UTC
+
+변경:
+
+- `v0.1.0` 태그 릴리스 시도 중 GoReleaser가 `cmd/agentab`를 찾지 못하는 문제를 확인했다.
+- 원인은 `.gitignore`의 `agentab` 패턴이 `cmd/agentab` 디렉터리까지 함께 무시하던 것이었고, 이를 `/agentab`로 수정했다.
+- 빠져 있던 `cmd/agentab/main.go`를 git에 추가한 뒤 `main`에 반영했다.
+- 비파괴적으로 `v0.1.1` 태그를 발행했고 GitHub Actions release가 성공했다.
+
+이유:
+
+- 이미 push된 `v0.1.0` 태그를 덮어쓰지 않고, 실패 원인을 수정한 새 커밋 기준으로 정상 릴리스를 만드는 것이 안전했기 때문
+
+영향:
+
+- `v0.1.1` GitHub Release가 실제로 생성되었고 Linux/macOS/Windows artifact와 `checksums.txt`가 업로드되었다.
+- CLI 릴리스 자동화 경로가 실환경에서 한 번 검증되었다.
+- 이후 릴리스부터는 같은 workflow를 반복 사용할 수 있다.
+
+후속 작업:
+
+- 릴리스 노트 정리
+- `v0.1.0` 실패 기록을 어떻게 처리할지 결정
+- CLI release checklist 항목 실제 체크 상태 반영
+
+### 2026-03-17 08:28 UTC
+
+변경:
+
+- `v0.1.1` 릴리스 노트 문서와 검증 기록 문서를 추가했다.
+- GitHub Release `v0.1.1` 기준으로 로컬 검증, 독립 smoke, Actions 성공 결과를 문서화했다.
+
+이유:
+
+- 첫 성공 릴리스의 결과와 검증 근거를 남겨야 이후 릴리스 기준선과 비교할 수 있기 때문
+
+영향:
+
+- 릴리스 결과가 GitHub Release 본문과 저장소 문서 양쪽에서 추적 가능해진다.
+- CLI release checklist의 실제 통과 여부를 이후 별도 체크할 근거가 생겼다.
+
+후속 작업:
+
+- GitHub Release 본문에 릴리스 노트 반영
+- CLI release checklist 항목 실제 체크 상태 반영
+- `v0.1.0` 실패 태그 처리 여부 결정
