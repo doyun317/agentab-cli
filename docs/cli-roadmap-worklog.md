@@ -545,3 +545,26 @@
 - GitHub Release 본문에 릴리스 노트 반영
 - CLI release checklist 항목 실제 체크 상태 반영
 - `v0.1.0` 실패 태그 처리 여부 결정
+
+### 2026-03-17 08:30 UTC
+
+변경:
+
+- `v0.1.1` 기준으로 CLI release checklist를 실제 검증 결과에 맞춰 채웠다.
+- GitHub Release에서 다시 내려받은 공개 asset 기준으로 추가 smoke를 수행했다.
+- `tab list`와 `doctor.chromeBin`은 조건부 항목으로 남겼다.
+
+이유:
+
+- 첫 성공 릴리스를 단순히 발행하는 것만으로는 부족하고, 어떤 항목이 실제로 통과했는지와 어떤 항목이 후속 확인이 필요한지를 명확히 남겨야 하기 때문
+
+영향:
+
+- CLI release checklist가 더 이상 빈 템플릿이 아니라 `v0.1.1` 기준의 실제 상태 문서가 되었다.
+- 다음 보완 작업이 `tab list`와 `doctor.chromeBin` 개선으로 더 분명해졌다.
+
+후속 작업:
+
+- `tab list` 공개 asset smoke 이슈 재현 및 원인 분석
+- `doctor`에서 `CHROME_BIN` override 노출 여부 개선
+- `v0.1.0` 실패 태그 처리 여부 결정
