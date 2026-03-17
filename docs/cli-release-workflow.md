@@ -2,7 +2,7 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-17 06:58 UTC  
+마지막 갱신: 2026-03-17 08:10 UTC
 목적: `agentab CLI`의 배포 방식을 `GitHub Releases + GoReleaser`로 고정하고, GitHub 저장소 생성 전후에 무엇을 해야 하는지 분리해 정리하기 위함
 
 ## 1. 선택한 배포 방식
@@ -19,19 +19,20 @@
 
 ## 2. 지금 가능한 범위
 
-현재 `/workspace/agentab-cli`는 아직 git 저장소가 아니다.
+현재 `agentab-cli`는 GitHub 저장소와 연결되어 있고 release workflow 파일도 존재한다.
 
-따라서 지금 즉시 가능한 것은 다음이다.
+현재 가능한 것은 다음이다.
 
 - GoReleaser 설정 검증
 - cross-platform snapshot binary build 검증
+- GitHub Actions 기반 tag release 실행
 - release 직전까지 필요한 스크립트와 문서 정리
 
-아직 불가능한 것은 다음이다.
+아직 남아 있는 것은 다음이다.
 
-- tag 기반 실제 release 생성
-- GitHub Release 업로드
-- GitHub Actions 자동 릴리스
+- 첫 공식 `v0.1.0` 태그 릴리스 실행
+- release notes 확정
+- 릴리스 체크리스트 최종 통과
 
 ## 3. 로컬 사전 검증 흐름
 
@@ -62,7 +63,7 @@ cd /workspace/agentab-cli
 3. git 저장소가 있으면 `goreleaser check`
 4. git 저장소 유무와 관계없이 `goreleaser release --snapshot --clean`
 
-현재 상태에서는 git 저장소가 아니므로 `check`는 건너뛰고 snapshot release를 바로 실행한다.
+현재 로컬에서는 snapshot release 검증에 사용하고, 원격 GitHub에서는 tag push 시 release workflow가 실행된다.
 
 주의:
 
@@ -94,7 +95,8 @@ cd /workspace/agentab-cli
 ### 4.1 최소 조건
 
 - `agentab-cli` 코드가 git 저장소 안에 있어야 한다.
-- 나중에 실제 release를 올릴 원격 GitHub 저장소가 있어야 한다.
+- 실제 release를 올릴 원격 GitHub 저장소가 있어야 한다.
+- `.github/workflows/release.yml`이 있어야 한다.
 
 ### 4.2 그 다음 단계
 
@@ -103,6 +105,18 @@ cd /workspace/agentab-cli
 3. tag 규칙 확정
 4. GitHub Actions release workflow 추가
 5. `v0.1.0` 같은 태그로 첫 release 실행
+
+현재 상태:
+
+- `1` 완료
+- `2` 완료
+- `3` 진행 가능
+- `4` 완료
+- `5` 미실행
+
+현재 workflow 파일:
+
+- `/workspace/agentab-cli/.github/workflows/release.yml`
 
 ## 5. 현재 GoReleaser 설정 범위
 
@@ -125,7 +139,7 @@ cd /workspace/agentab-cli
 
 배포 준비 기준 다음 순서:
 
-1. 로컬 snapshot build를 릴리스 체크리스트에 반영
-2. git 저장소 생성
-3. GitHub Actions release workflow 추가
-4. 첫 태그 릴리스 검증
+1. `v0.1.0` 릴리스 체크리스트 실제 실행
+2. 릴리스 노트 초안 작성
+3. `v0.1.0` 태그 푸시
+4. GitHub Release 결과 검증

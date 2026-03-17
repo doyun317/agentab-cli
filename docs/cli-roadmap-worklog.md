@@ -187,15 +187,17 @@
 - `done` release checklist 초안 작성
 - `done` 배포 방식 결정
 - `done` GoReleaser local snapshot workflow 구현
-- `todo` git 저장소 생성 후 GitHub Actions release workflow 연결
+- `done` git 저장소 생성 후 GitHub Actions release workflow 연결
+- `todo` `v0.1.0` 릴리스 체크리스트 실제 실행
+- `todo` 릴리스 노트 초안 작성
 
 ## 6. 현재 추천 1순위
 
-- git 저장소 생성 후 GitHub Actions release workflow 연결
+- `v0.1.0` 릴리스 체크리스트 실제 실행
 
 이유:
 
-- 배포 방식은 `GitHub Releases + GoReleaser`로 결정되었고 로컬 snapshot 검증 경로도 생겼으므로, 다음 병목은 실제 저장소와 태그 기반 릴리스 자동화 연결이기 때문
+- GitHub 저장소와 Actions release workflow까지 준비되었으므로, 이제 남은 핵심은 첫 태그 릴리스 전에 제품 품질 게이트를 실제로 통과시키는 것이기 때문
 
 ## 7. 출시 체크리스트 초안
 
@@ -473,3 +475,26 @@
 - git 저장소 생성 후 GitHub Actions release workflow 연결
 - 릴리스 노트 초안 작성
 - JSON/text output 예제 보강
+
+### 2026-03-17 08:10 UTC
+
+변경:
+
+- GitHub 저장소 연결 이후 tag 기반 릴리스를 위한 GitHub Actions workflow 파일 `.github/workflows/release.yml`을 추가했다.
+- `v*` 태그 push 시 GoReleaser가 release를 수행하도록 설정했다.
+- 배포 워크플로우 문서와 릴리스 체크리스트를 현재 상태에 맞게 갱신했다.
+
+이유:
+
+- 로컬 snapshot 검증만으로는 실제 배포가 끝나지 않으므로, GitHub Release 자동화 경로를 먼저 고정해야 첫 공식 릴리스까지 진행할 수 있기 때문
+
+영향:
+
+- 이제 `agentab-cli`는 `v0.1.0` 같은 태그를 push하면 GitHub Actions에서 release artifact를 만들 수 있는 상태가 되었다.
+- CLI 트랙의 다음 1순위는 배포 자동화 구현이 아니라 릴리스 후보 품질 검증으로 이동했다.
+
+후속 작업:
+
+- `v0.1.0` 릴리스 체크리스트 실제 실행
+- 릴리스 노트 초안 작성
+- 첫 태그 릴리스 검증

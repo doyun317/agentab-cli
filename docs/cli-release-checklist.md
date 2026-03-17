@@ -139,6 +139,7 @@
 ## 9. 배포 준비
 
 - [ ] [cli-release-workflow.md](/workspace/agentab-cli/docs/cli-release-workflow.md)가 현재 배포 방식과 맞다.
+- [ ] `.github/workflows/release.yml`이 현재 GoReleaser 설정과 맞다.
 - [ ] `./scripts/install-goreleaser.sh`가 현재 고정 버전을 설치한다.
 - [ ] `./scripts/release-snapshot.sh`가 현재 환경에서 성공한다.
 - [ ] non-git 환경에서는 `snapshot release`만으로 archive와 checksum이 생성됨을 확인했다.
