@@ -1,8 +1,8 @@
 # agentab CLI 릴리스 체크리스트
 
-상태: v0.1.1 검증 기록 + main 후속 수정 반영
+상태: v0.1.2 기준 검증 완료
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-17 08:42 UTC
+마지막 갱신: 2026-03-17 08:53 UTC
 목적: `agentab CLI`를 실제 배포 가능한 제품으로 마감하기 전에 확인해야 하는 항목을 표준화하기 위함
 
 ## 1. 사용 방법
@@ -26,12 +26,12 @@
 릴리스 버전:
 
 - [x] 버전 태그 확정
-  값: `v0.1.1`
+  값: `v0.1.2`
 
 검증 일시:
 
 - [x] UTC 시각 기록
-  값: `2026-03-17 08:30 UTC`
+  값: `2026-03-17 08:53 UTC`
 
 검증 환경:
 
@@ -68,14 +68,15 @@
 - [x] `managedBinPath`가 올바르게 보인다.
 - [x] `pinchtabURL`과 `pinchtabHealthy`가 합리적으로 나온다.
 - [~] `chromeBin` 탐지 결과가 현재 환경과 맞다.
-  메모: `main`에서는 `CHROME_BIN` override를 `chromeBin`, `chromeBinFound`, `chromeBinSource`로 반영하도록 수정했다. 공개 릴리스 반영은 다음 patch release가 필요하다.
+- [x] `chromeBin` 탐지 결과가 현재 환경과 맞다.
+  메모: 공개 릴리스 asset 기준으로 `CHROME_BIN` override가 `chromeBin`, `chromeBinFound=true`, `chromeBinSource=env`로 보임을 재확인했다.
 
 ### 4.2 세션과 탭
 
 - [x] `agentab session start demo`
 - [x] `agentab tab open --session demo <url>`
-- [~] `agentab tab list --session demo`
-  메모: 공개 릴리스 asset smoke에서 `tab open` 직후 `about:blank`만 보이는 사례가 한 번 있어 추가 확인 필요.
+- [x] `agentab tab list --session demo`
+  메모: 공개 릴리스 asset smoke에서 `currentTabId` 포함과 첫 번째 탭 URL 정상 반영을 재확인했다.
 - [x] `agentab tab text --session demo`
 - [x] `agentab tab snapshot --session demo`
 - [x] `agentab tab find --session demo "<query>"`
@@ -159,7 +160,7 @@
 - [x] 릴리스 노트 초안 작성
 - [x] 변경된 공개 계약 정리
 - [~] 알려진 제한 사항 정리
-  메모: `v0.1.1` 검증 시점의 `tab list`와 `doctor.chromeBin` 이슈는 `main`에서 수정되었고, 공개 릴리스 반영만 남아 있다.
+  메모: 심화 검증이 남은 항목은 있으나, `v0.1.1` 시점 공개 릴리스 이슈였던 `tab list`와 `doctor.chromeBin`은 `v0.1.2`에서 해소했다.
 - [x] 바이너리 배포 방식 결정 또는 검증
 - [x] 버전 태그 정책과 실제 태그 값 확인
 
@@ -177,12 +178,12 @@
 
 최종 판정:
 
-- [ ] 배포 가능
-- [x] 조건부 배포 가능
+- [x] 배포 가능
+- [ ] 조건부 배포 가능
 - [ ] 배포 보류
 
 메모:
 
 - [x] 남은 이슈 기록
-  - 공개 릴리스 asset 기준으로는 `tab list`와 `doctor.chromeBin` 수정이 아직 반영되지 않았고, 새 patch release가 필요하다.
+  - 심화 검증 항목 중 `lock conflict`, 일부 오류 코드, headed/headless 이중 확인은 후속 작업으로 남아 있다.
   - 첫 실패 태그 `v0.1.0`은 남아 있고, 실제 사용 기준 릴리스는 `v0.1.1`이다.

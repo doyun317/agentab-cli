@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-17 08:42 UTC
+마지막 갱신: 2026-03-17 08:53 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -614,5 +614,30 @@
 후속 작업:
 
 - `tab list`와 `doctor.chromeBin` 수정이 포함된 새 patch release 필요 여부 결정
+- `v0.1.0` 실패 태그 처리 여부 결정
+- `--output text` 기준 doctor 가독성 점검
+
+### 2026-03-17 08:53 UTC
+
+변경:
+
+- `v0.1.2` 태그를 생성하고 GitHub Actions release workflow를 성공시켰다.
+- GitHub Release `v0.1.2`에 cross-platform artifact와 checksum이 업로드되었다.
+- 공개 `linux_x86_64` asset을 다시 내려받아 별도 폴더에서 `doctor -> session start -> tab open -> tab list -> tab find -> tab click -> tab text -> session stop -> daemon stop` smoke를 수행했다.
+- `tab list`와 `doctor.chromeBin` 수정이 공개 릴리스에서도 반영됨을 확인했다.
+- `v0.1.2` 릴리스 노트와 검증 기록 문서를 추가했다.
+
+이유:
+
+- `main`에서 고친 내용을 실제 사용자가 받는 공개 release asset 기준으로 검증해야 patch release를 닫을 수 있기 때문
+
+영향:
+
+- `v0.1.2`는 `v0.1.1` 이후 남아 있던 대표 사용자 체감 이슈 두 개를 공개 릴리스 기준으로 해소한 버전이 되었다.
+- CLI release checklist는 `v0.1.2` 기준으로 `배포 가능` 상태가 되었다.
+
+후속 작업:
+
+- `v0.1.2` GitHub Release 본문 정리
 - `v0.1.0` 실패 태그 처리 여부 결정
 - `--output text` 기준 doctor 가독성 점검
