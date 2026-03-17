@@ -1,8 +1,8 @@
 # agentab CLI 릴리스 체크리스트
 
-상태: v0.1.1 기준 부분 검증 완료
+상태: v0.1.1 검증 기록 + main 후속 수정 반영
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-17 08:30 UTC
+마지막 갱신: 2026-03-17 08:42 UTC
 목적: `agentab CLI`를 실제 배포 가능한 제품으로 마감하기 전에 확인해야 하는 항목을 표준화하기 위함
 
 ## 1. 사용 방법
@@ -68,7 +68,7 @@
 - [x] `managedBinPath`가 올바르게 보인다.
 - [x] `pinchtabURL`과 `pinchtabHealthy`가 합리적으로 나온다.
 - [~] `chromeBin` 탐지 결과가 현재 환경과 맞다.
-  메모: `CHROME_BIN` override로 실제 실행은 되지만 `doctor` 출력의 `chromeBin`은 빈 값으로 보임.
+  메모: `main`에서는 `CHROME_BIN` override를 `chromeBin`, `chromeBinFound`, `chromeBinSource`로 반영하도록 수정했다. 공개 릴리스 반영은 다음 patch release가 필요하다.
 
 ### 4.2 세션과 탭
 
@@ -159,7 +159,7 @@
 - [x] 릴리스 노트 초안 작성
 - [x] 변경된 공개 계약 정리
 - [~] 알려진 제한 사항 정리
-  메모: `tab list`와 `doctor.chromeBin` 관련 후속 확인 포인트가 남아 있다.
+  메모: `v0.1.1` 검증 시점의 `tab list`와 `doctor.chromeBin` 이슈는 `main`에서 수정되었고, 공개 릴리스 반영만 남아 있다.
 - [x] 바이너리 배포 방식 결정 또는 검증
 - [x] 버전 태그 정책과 실제 태그 값 확인
 
@@ -184,6 +184,5 @@
 메모:
 
 - [x] 남은 이슈 기록
-  - 공개 릴리스 asset smoke에서 `tab open` 직후 `tab list`가 `about:blank`만 보이는 사례가 있었다.
-  - `doctor`의 `chromeBin`은 현재 `CHROME_BIN` override를 반영하지 않아 빈 값으로 보인다.
+  - 공개 릴리스 asset 기준으로는 `tab list`와 `doctor.chromeBin` 수정이 아직 반영되지 않았고, 새 patch release가 필요하다.
   - 첫 실패 태그 `v0.1.0`은 남아 있고, 실제 사용 기준 릴리스는 `v0.1.1`이다.

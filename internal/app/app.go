@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -87,15 +88,7 @@ func runDoctor(ctx context.Context, store *state.Store) response.Envelope {
 	pinchURL := manager.BaseURL()
 	ptClient := manager.Client(1500 * time.Millisecond)
 	_, healthErr := ptClient.Health(ctx)
-
-	chromeBins := []string{"google-chrome", "chromium", "chromium-browser", "chrome"}
-	foundChrome := ""
-	for _, name := range chromeBins {
-		if bin, lookErr := exec.LookPath(name); lookErr == nil {
-			foundChrome = bin
-			break
-		}
-	}
+	chrome := resolveChromeBinary()
 
 	daemonInfo, daemonErr := store.ReadDaemonInfo()
 	data := map[string]any{
@@ -104,7 +97,12 @@ func runDoctor(ctx context.Context, store *state.Store) response.Envelope {
 		"managedBinPath":  inst.ManagedBinaryPath(),
 		"pinchtabURL":     pinchURL,
 		"pinchtabHealthy": healthErr == nil,
-		"chromeBin":       foundChrome,
+		"chromeBin":       chrome.Path,
+		"chromeBinFound":  chrome.Found,
+		"chromeBinSource": chrome.Source,
+	}
+	if chrome.Error != "" {
+		data["chromeBinError"] = chrome.Error
 	}
 	if err == nil {
 		data["pinchtabBin"] = path
@@ -119,6 +117,64 @@ func runDoctor(ctx context.Context, store *state.Store) response.Envelope {
 		data["pinchtab"] = info
 	}
 	return response.OK(data, nil)
+}
+
+type chromeBinaryInfo struct {
+	Path   string
+	Source string
+	Found  bool
+	Error  string
+}
+
+func resolveChromeBinary() chromeBinaryInfo {
+	if override := strings.TrimSpace(os.Getenv("CHROME_BIN")); override != "" {
+		resolved, err := resolveChromeCandidate(override)
+		if err != nil {
+			return chromeBinaryInfo{
+				Path:   override,
+				Source: "env",
+				Found:  false,
+				Error:  err.Error(),
+			}
+		}
+		return chromeBinaryInfo{
+			Path:   resolved,
+			Source: "env",
+			Found:  true,
+		}
+	}
+
+	chromeBins := []string{"google-chrome", "chromium", "chromium-browser", "chrome"}
+	for _, name := range chromeBins {
+		if bin, err := exec.LookPath(name); err == nil {
+			return chromeBinaryInfo{
+				Path:   bin,
+				Source: "path",
+				Found:  true,
+			}
+		}
+	}
+	return chromeBinaryInfo{Source: "path", Found: false}
+}
+
+func resolveChromeCandidate(candidate string) (string, error) {
+	if candidate == "" {
+		return "", errors.New("empty chrome binary candidate")
+	}
+	if info, err := os.Stat(candidate); err == nil {
+		if info.IsDir() {
+			return "", fmt.Errorf("chrome binary path is a directory: %s", candidate)
+		}
+		abs, absErr := filepath.Abs(candidate)
+		if absErr != nil {
+			return candidate, nil
+		}
+		return abs, nil
+	}
+	if resolved, err := exec.LookPath(candidate); err == nil {
+		return resolved, nil
+	}
+	return "", fmt.Errorf("chrome binary not found: %s", candidate)
 }
 
 func runDaemon(ctx context.Context, store *state.Store, global GlobalOptions, args []string) response.Envelope {

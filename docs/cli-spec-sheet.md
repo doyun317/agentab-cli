@@ -261,7 +261,7 @@ PinchTab은 `agentab`의 브라우저 런타임 백엔드다.
 - 기본 URL은 `http://127.0.0.1:9867`
 - `PINCHTAB_URL`이 지정되면 우선 사용
 - 로컬 URL이고 접근 실패 시 자동 설치/자동 실행을 시도
-- `CHROME_BIN`이 있으면 PinchTab config에 `browser.binary`로 전달
+- `CHROME_BIN`이 있으면 PinchTab config에 `browser.binary`로 전달하고, `doctor`는 해당 경로를 `chromeBin`과 `chromeBinSource=env`로 보여준다
 
 ## 11. daemon 정책
 

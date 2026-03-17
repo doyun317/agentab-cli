@@ -82,6 +82,8 @@ go run ./cmd/agentab doctor
 - `pinchtabURL`
 - `pinchtabHealthy`
 - `chromeBin`
+- `chromeBinFound`
+- `chromeBinSource`
 
 ## 5. 첫 브라우저 조작
 

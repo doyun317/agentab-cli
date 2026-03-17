@@ -2,7 +2,7 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-17 08:10 UTC
+마지막 갱신: 2026-03-17 08:42 UTC
 목적: `agentab CLI`의 배포 방식을 `GitHub Releases + GoReleaser`로 고정하고, GitHub 저장소 생성 전후에 무엇을 해야 하는지 분리해 정리하기 위함
 
 ## 1. 선택한 배포 방식
@@ -30,7 +30,7 @@
 
 아직 남아 있는 것은 다음이다.
 
-- 첫 공식 `v0.1.0` 태그 릴리스 실행
+- 공개 릴리스 기준 patch 변경사항 반영
 - release notes 확정
 - 릴리스 체크리스트 최종 통과
 
@@ -77,12 +77,12 @@ cd /workspace/agentab-cli
 
 예시 산출물:
 
-- `agentab-cli_0.1.0-snapshot_linux_x86_64.tar.gz`
-- `agentab-cli_0.1.0-snapshot_linux_arm64.tar.gz`
-- `agentab-cli_0.1.0-snapshot_macOS_x86_64.tar.gz`
-- `agentab-cli_0.1.0-snapshot_macOS_arm64.tar.gz`
-- `agentab-cli_0.1.0-snapshot_windows_x86_64.zip`
-- `agentab-cli_0.1.0-snapshot_windows_arm64.zip`
+- `agentab-cli_0.1.2-snapshot_linux_x86_64.tar.gz`
+- `agentab-cli_0.1.2-snapshot_linux_arm64.tar.gz`
+- `agentab-cli_0.1.2-snapshot_macOS_x86_64.tar.gz`
+- `agentab-cli_0.1.2-snapshot_macOS_arm64.tar.gz`
+- `agentab-cli_0.1.2-snapshot_windows_x86_64.zip`
+- `agentab-cli_0.1.2-snapshot_windows_arm64.zip`
 - `checksums.txt`
 
 참고:
@@ -104,15 +104,15 @@ cd /workspace/agentab-cli
 2. 원격 GitHub 저장소 연결
 3. tag 규칙 확정
 4. GitHub Actions release workflow 추가
-5. `v0.1.0` 같은 태그로 첫 release 실행
+5. patch 태그로 release 실행
 
 현재 상태:
 
 - `1` 완료
 - `2` 완료
-- `3` 진행 가능
+- `3` 진행 중
 - `4` 완료
-- `5` 미실행
+- `5` 반복 가능
 
 현재 workflow 파일:
 
@@ -126,7 +126,7 @@ cd /workspace/agentab-cli
 - `linux`, `darwin`, `windows`
 - `amd64`, `arm64`
 - `CGO_ENABLED=0`
-- snapshot 버전은 `0.1.0-snapshot`
+- snapshot 버전은 `0.1.2-snapshot`
 - changelog는 일단 비활성화
 
 의도:
@@ -139,7 +139,7 @@ cd /workspace/agentab-cli
 
 배포 준비 기준 다음 순서:
 
-1. `v0.1.0` 릴리스 체크리스트 실제 실행
-2. 릴리스 노트 초안 작성
-3. `v0.1.0` 태그 푸시
+1. patch 변경사항 커밋 및 `main` 반영
+2. 릴리스 노트 정리
+3. `v0.1.2` 태그 푸시
 4. GitHub Release 결과 검증

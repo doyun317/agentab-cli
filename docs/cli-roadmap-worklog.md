@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-17 06:19 UTC
+마지막 갱신: 2026-03-17 08:42 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -592,3 +592,27 @@
 - `doctor`에서 `CHROME_BIN` override 노출 여부 개선
 - 이 수정 포함 새 patch release 필요 여부 결정
 - `v0.1.0` 실패 태그 처리 여부 결정
+
+### 2026-03-17 08:42 UTC
+
+변경:
+
+- `doctor`가 `CHROME_BIN` override를 `chromeBin`에 반영하도록 수정했다.
+- `doctor` 응답에 `chromeBinFound`, `chromeBinSource`, `chromeBinError` 필드를 추가했다.
+- app 레벨 회귀 테스트를 추가하고 실제 `CHROME_BIN` override로 `agentab doctor` 출력까지 확인했다.
+- 설치/트러블슈팅/릴리스 체크리스트 문서를 새 출력 기준으로 갱신했다.
+
+이유:
+
+- 실제 브라우저 실행은 `CHROME_BIN` override를 따르는데 `doctor`는 PATH만 보고 있어 진단 결과와 런타임 동작이 어긋났기 때문
+
+영향:
+
+- `doctor`만 봐도 현재 어떤 Chrome 경로가 실제로 선택될지와 그 근거를 알 수 있다.
+- 공개 릴리스 기준 남은 제품 이슈는 기능 결함보다 “이 수정이 포함된 새 patch release 필요” 쪽으로 줄어들었다.
+
+후속 작업:
+
+- `tab list`와 `doctor.chromeBin` 수정이 포함된 새 patch release 필요 여부 결정
+- `v0.1.0` 실패 태그 처리 여부 결정
+- `--output text` 기준 doctor 가독성 점검

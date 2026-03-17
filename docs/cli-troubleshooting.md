@@ -103,7 +103,8 @@ agentab tab focus --session demo --tab <tabId>
 
 뜻:
 
-- `doctor` 기준으로 PATH에서 Chrome/Chromium을 찾지 못했거나, PinchTab이 브라우저 실행에 실패한 상태입니다.
+- `doctor` 기준으로 Chrome/Chromium 경로를 찾지 못했거나, PinchTab이 브라우저 실행에 실패한 상태입니다.
+- `CHROME_BIN`을 지정했다면 `chromeBinSource`가 `env`로, PATH에서 찾았다면 `path`로 보입니다.
 
 해결:
 
@@ -117,6 +118,12 @@ agentab tab focus --session demo --tab <tabId>
 export CHROME_BIN=/path/to/chrome
 agentab doctor
 ```
+
+확인 포인트:
+
+- `chromeBin`이 기대한 경로인지
+- `chromeBinFound`가 `true`인지
+- `chromeBinSource`가 `env` 또는 `path` 중 기대한 값인지
 
 ### 2.7 Linux에서 `libglib-2.0.so.0` 같은 오류
 
