@@ -1,5 +1,5 @@
 .tools/
-agentab
+/agentab
 coverage.out
 *.log
 dist/
