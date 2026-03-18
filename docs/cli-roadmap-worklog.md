@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-18 03:01 UTC
+마지막 갱신: 2026-03-18 04:36 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -50,9 +50,9 @@
 
 아직 마감이 필요한 것:
 
-- 운영성 문서와 실제 릴리스 검증 이력 정리
 - 후속 patch release 범위 결정
 - 액션 smoke를 다음 patch release 검증 기록에 반영
+- 공개 release asset 기준 액션 smoke 승격 여부 결정
 
 ## 4. 단계별 로드맵
 
@@ -898,3 +898,26 @@
 - 운영성 문서와 실제 릴리스 검증 이력 정리
 - 후속 patch release 범위 결정
 - 필요하면 공개 release asset 기준 액션 smoke 한 번 더 수행
+
+### 2026-03-18 04:36 UTC
+
+변경:
+
+- 운영 관점에서 바로 참고할 [cli-operations-runbook.md](/workspace/agentab-cli/docs/cli-operations-runbook.md)를 추가했다.
+- 공개 릴리스별 note/verification 문서를 한눈에 보는 [releases/README.md](/workspace/agentab-cli/docs/releases/README.md) 인덱스를 추가했다.
+- README, CLI 개요, release workflow 문서에서 새 운영/검증 문서로 연결되는 링크를 보강했다.
+
+이유:
+
+- 실제 운영 중에는 설치 문서, 트러블슈팅 문서, 릴리스 검증 문서가 흩어져 있으면 필요한 정보를 다시 찾는 데 시간이 오래 걸리고, 현재 공개 릴리스 기준선과 `main` 하드닝 상태도 한눈에 비교하기 어려웠기 때문
+
+영향:
+
+- 운영자는 runbook 한 장으로 `doctor -> logs -> artifacts -> smoke` 흐름을 바로 따라갈 수 있다.
+- 릴리스별 공개 검증 기준선과 아직 릴리스에 올라가지 않은 `main` 하드닝 항목을 구분해서 설명할 수 있게 됐다.
+
+후속 작업:
+
+- 후속 patch release 범위 결정
+- 액션 smoke를 다음 patch release 검증 기록에 반영
+- 공개 release asset 기준 액션 smoke 승격 여부 결정

@@ -32,8 +32,10 @@ CLI-focused docs:
 - [CLI overview](/workspace/agentab-cli/docs/cli.md)
 - [CLI install and first run](/workspace/agentab-cli/docs/cli-install.md)
 - [CLI troubleshooting](/workspace/agentab-cli/docs/cli-troubleshooting.md)
+- [CLI operations runbook](/workspace/agentab-cli/docs/cli-operations-runbook.md)
 - [CLI release workflow](/workspace/agentab-cli/docs/cli-release-workflow.md)
 - [CLI release checklist](/workspace/agentab-cli/docs/cli-release-checklist.md)
+- [Release verification history](/workspace/agentab-cli/docs/releases/README.md)
 
 Mode smoke:
 

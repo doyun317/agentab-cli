@@ -184,5 +184,5 @@
 메모:
 
 - [x] 남은 이슈 기록
-  - 입력/스크롤 등 일부 액션 안정성은 심화 검증 여지가 남아 있다.
+  - 확장된 action smoke(`click/type/fill/press/scroll`)는 `main`에서 검증됐고, 다음 patch release verification 문서에 승격할 예정이다.
   - 실제 첫 공개 릴리스는 `v0.1.1`이다. 실패했던 `v0.1.0` 태그는 정리했다.

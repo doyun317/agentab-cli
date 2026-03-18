@@ -60,4 +60,5 @@ Further guides:
 
 - install and first run: [cli-install.md](/workspace/agentab-cli/docs/cli-install.md)
 - troubleshooting: [cli-troubleshooting.md](/workspace/agentab-cli/docs/cli-troubleshooting.md)
+- operations runbook: [cli-operations-runbook.md](/workspace/agentab-cli/docs/cli-operations-runbook.md)
 - release gate: [cli-release-checklist.md](/workspace/agentab-cli/docs/cli-release-checklist.md)

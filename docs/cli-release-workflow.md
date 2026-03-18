@@ -159,3 +159,9 @@ AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
 2. 릴리스 노트 정리
 3. `v0.1.3` 태그 푸시
 4. GitHub Release 결과 검증
+
+관련 문서:
+
+- [release checklist](/workspace/agentab-cli/docs/cli-release-checklist.md)
+- [operations runbook](/workspace/agentab-cli/docs/cli-operations-runbook.md)
+- [release verification history](/workspace/agentab-cli/docs/releases/README.md)
