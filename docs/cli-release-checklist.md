@@ -2,7 +2,7 @@
 
 상태: v0.1.2 기준 검증 완료
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-17 08:53 UTC
+마지막 갱신: 2026-03-18 01:25 UTC
 목적: `agentab CLI`를 실제 배포 가능한 제품으로 마감하기 전에 확인해야 하는 항목을 표준화하기 위함
 
 ## 1. 사용 방법
@@ -67,7 +67,6 @@
 - [x] `artifactsDir`가 올바르게 보인다.
 - [x] `managedBinPath`가 올바르게 보인다.
 - [x] `pinchtabURL`과 `pinchtabHealthy`가 합리적으로 나온다.
-- [~] `chromeBin` 탐지 결과가 현재 환경과 맞다.
 - [x] `chromeBin` 탐지 결과가 현재 환경과 맞다.
   메모: 공개 릴리스 asset 기준으로 `CHROME_BIN` override가 `chromeBin`, `chromeBinFound=true`, `chromeBinSource=env`로 보임을 재확인했다.
 

@@ -7,7 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
+	"github.com/agentab/agentab-cli/internal/response"
 	"github.com/agentab/agentab-cli/internal/state"
 )
 
@@ -100,5 +102,48 @@ func TestRunDoctorReflectsChromeBinOverride(t *testing.T) {
 	}
 	if _, exists := data["chromeBinError"]; exists {
 		t.Fatalf("runDoctor().Data contains chromeBinError, want no error: %v", data["chromeBinError"])
+	}
+}
+
+func TestRunSessionStopWithoutCurrentSessionReturnsNotFound(t *testing.T) {
+	store, err := state.NewStore(t.TempDir())
+	if err != nil {
+		t.Fatalf("NewStore() error = %v", err)
+	}
+
+	env := runSession(context.Background(), store, GlobalOptions{}, []string{"stop"})
+	if env.OK {
+		t.Fatal("runSession().OK = true, want false")
+	}
+	if env.Error == nil || env.Error.Code != "not_found" {
+		t.Fatalf("runSession().Error = %#v, want not_found", env.Error)
+	}
+	if got := response.ExitCode(env); got != 4 {
+		t.Fatalf("ExitCode() = %d, want 4", got)
+	}
+}
+
+func TestRunTabTextWithoutCurrentTabReturnsNotFound(t *testing.T) {
+	store, err := state.NewStore(t.TempDir())
+	if err != nil {
+		t.Fatalf("NewStore() error = %v", err)
+	}
+	if err := store.PutSession(state.Session{
+		Name:       "demo",
+		InstanceID: "inst_1",
+		LastUsedAt: time.Now().UTC(),
+	}); err != nil {
+		t.Fatalf("PutSession() error = %v", err)
+	}
+
+	env := runTab(context.Background(), store, GlobalOptions{Session: "demo"}, []string{"text"})
+	if env.OK {
+		t.Fatal("runTab().OK = true, want false")
+	}
+	if env.Error == nil || env.Error.Code != "not_found" {
+		t.Fatalf("runTab().Error = %#v, want not_found", env.Error)
+	}
+	if got := response.ExitCode(env); got != 4 {
+		t.Fatalf("ExitCode() = %d, want 4", got)
 	}
 }

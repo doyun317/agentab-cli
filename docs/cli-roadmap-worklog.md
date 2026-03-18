@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-17 08:53 UTC
+마지막 갱신: 2026-03-18 01:25 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -50,9 +50,9 @@
 
 아직 마감이 필요한 것:
 
-- CLI 제품 기준 smoke 시나리오 정리
-- 운영 로그와 artifact 기준 정리
-- 배포 방식 결정
+- 종료 코드와 오류 일관성의 남은 검증 항목 정리
+- 신규 환경 자동 설치 smoke 보강
+- text output / 로그 / artifact 운영 polish
 
 ## 4. 단계별 로드맵
 
@@ -159,8 +159,9 @@
 - `done` JSON envelope 계약 구현
 - `done` 종료 코드 매핑 구현
 - `done` session / tab 기본 명령 구현
-- `todo` 명령별 text output 경험 점검
+- `doing` 명령별 text output 경험 점검
 - `todo` CLI 예제 명령 셋 정리
+- `doing` 종료 코드 테스트 보강
 
 ### 5.2 런타임과 신뢰성
 
@@ -169,8 +170,9 @@
 - `done` PinchTab / daemon child process detach 보완
 - `done` 최신 PinchTab의 `browser.binary` 전달 보완
 - `done` 멀티 인스턴스 `tab list` 경로 수정
-- `todo` Chrome 런타임 의존성 점검 흐름 개선
-- `todo` lock / timeout / upstream error 문서화
+- `todo` 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
+- `doing` 잘못된 session / tab / 종료 코드 검증 보강
+- `todo` lock / timeout / upstream error 문서화 및 검증
 
 ### 5.3 운영성과 산출물
 
@@ -188,16 +190,17 @@
 - `done` 배포 방식 결정
 - `done` GoReleaser local snapshot workflow 구현
 - `done` git 저장소 생성 후 GitHub Actions release workflow 연결
-- `todo` `v0.1.0` 릴리스 체크리스트 실제 실행
-- `todo` 릴리스 노트 초안 작성
+- `done` `v0.1.2` patch release 발행
+- `todo` `v0.1.0` 실패 태그 처리 여부 결정
+- `todo` 릴리스/체크리스트 문서 중복 정리
 
 ## 6. 현재 추천 1순위
 
-- `v0.1.0` 릴리스 체크리스트 실제 실행
+- 종료 코드와 대표 오류 경로 검증 완료
 
 이유:
 
-- GitHub 저장소와 Actions release workflow까지 준비되었으므로, 이제 남은 핵심은 첫 태그 릴리스 전에 제품 품질 게이트를 실제로 통과시키는 것이기 때문
+- 공개 릴리스는 가능 상태가 되었고, 지금 남은 가장 직접적인 제품 하드닝은 아직 비어 있는 오류 코드/오류 일관성 항목을 테스트와 문서 기준으로 닫는 것이기 때문
 
 ## 7. 출시 체크리스트 초안
 
@@ -640,4 +643,26 @@
 
 - `v0.1.2` GitHub Release 본문 정리
 - `v0.1.0` 실패 태그 처리 여부 결정
+- `--output text` 기준 doctor 가독성 점검
+
+### 2026-03-18 01:25 UTC
+
+변경:
+
+- CLI 로드맵 문서를 `v0.1.2` 공개 릴리스 이후 상태 기준으로 재정렬했다.
+- 릴리스 이전 기준으로 남아 있던 `v0.1.0` 중심 우선순위를 정리하고, 현재 하드닝 항목을 새 추천 1순위로 올렸다.
+- release checklist의 `chromeBin` 중복 항목을 정리했다.
+
+이유:
+
+- 공개 릴리스까지 끝난 뒤에도 문서가 이전 단계 기준으로 남아 있으면 다음 작업 우선순위와 실제 제품 상태가 어긋나기 때문
+
+영향:
+
+- 이후 CLI 작업은 “릴리스 준비”보다 “릴리스 이후 하드닝” 관점으로 더 명확하게 추적할 수 있다.
+
+후속 작업:
+
+- 종료 코드와 오류 경로 테스트 보강
+- 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
 - `--output text` 기준 doctor 가독성 점검
