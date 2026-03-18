@@ -206,6 +206,44 @@ func TestRunSessionStopWithoutCurrentSessionReturnsNotFound(t *testing.T) {
 	}
 }
 
+func TestRunSessionWithExplicitMissingSessionReturnsNotFound(t *testing.T) {
+	store := newStoreWithFakeDaemon(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost && r.URL.Path == "/sessions/missing/stop" {
+			response.WriteJSON(w, http.StatusNotFound, response.Fail("not_found", "session missing not found", nil, nil))
+			return
+		}
+		if r.Method == http.MethodPost && r.URL.Path == "/sessions/missing/resume" {
+			response.WriteJSON(w, http.StatusNotFound, response.Fail("not_found", "session missing not found", nil, nil))
+			return
+		}
+		http.NotFound(w, r)
+	})
+
+	for _, tc := range []struct {
+		name string
+		args []string
+	}{
+		{name: "stop", args: []string{"stop", "missing"}},
+		{name: "resume", args: []string{"resume", "missing"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			env := runSession(context.Background(), store, GlobalOptions{}, tc.args)
+			if env.OK {
+				t.Fatal("runSession().OK = true, want false")
+			}
+			if env.Error == nil || env.Error.Code != "not_found" {
+				t.Fatalf("runSession().Error = %#v, want not_found", env.Error)
+			}
+			if env.Error.Message != "session missing not found" {
+				t.Fatalf("runSession().Error.Message = %q, want %q", env.Error.Message, "session missing not found")
+			}
+			if got := response.ExitCode(env); got != 4 {
+				t.Fatalf("ExitCode() = %d, want 4", got)
+			}
+		})
+	}
+}
+
 func TestRunTabTextWithoutCurrentTabReturnsNotFound(t *testing.T) {
 	store, err := state.NewStore(t.TempDir())
 	if err != nil {
@@ -228,6 +266,56 @@ func TestRunTabTextWithoutCurrentTabReturnsNotFound(t *testing.T) {
 	}
 	if got := response.ExitCode(env); got != 4 {
 		t.Fatalf("ExitCode() = %d, want 4", got)
+	}
+}
+
+func TestRunTabWithExplicitMissingIdentifiersReturnsNotFound(t *testing.T) {
+	store := newStoreWithFakeDaemon(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet && r.URL.Path == "/sessions/missing/tabs" {
+			response.WriteJSON(w, http.StatusNotFound, response.Fail("not_found", "session missing not found", nil, nil))
+			return
+		}
+		if r.Method == http.MethodGet && r.URL.Path == "/tabs/tab_missing/text" {
+			response.WriteJSON(w, http.StatusNotFound, response.Fail("not_found", "tab tab_missing not found", nil, nil))
+			return
+		}
+		http.NotFound(w, r)
+	})
+
+	for _, tc := range []struct {
+		name        string
+		global      GlobalOptions
+		args        []string
+		wantMessage string
+	}{
+		{
+			name:        "missing session on tab list",
+			global:      GlobalOptions{Session: "missing"},
+			args:        []string{"list"},
+			wantMessage: "session missing not found",
+		},
+		{
+			name:        "missing tab on tab text",
+			global:      GlobalOptions{Tab: "tab_missing"},
+			args:        []string{"text"},
+			wantMessage: "tab tab_missing not found",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			env := runTab(context.Background(), store, tc.global, tc.args)
+			if env.OK {
+				t.Fatal("runTab().OK = true, want false")
+			}
+			if env.Error == nil || env.Error.Code != "not_found" {
+				t.Fatalf("runTab().Error = %#v, want not_found", env.Error)
+			}
+			if env.Error.Message != tc.wantMessage {
+				t.Fatalf("runTab().Error.Message = %q, want %q", env.Error.Message, tc.wantMessage)
+			}
+			if got := response.ExitCode(env); got != 4 {
+				t.Fatalf("ExitCode() = %d, want 4", got)
+			}
+		})
 	}
 }
 
