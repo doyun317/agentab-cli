@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -12,6 +13,38 @@ import (
 	"github.com/agentab/agentab-cli/internal/response"
 	"github.com/agentab/agentab-cli/internal/state"
 )
+
+func newStoreWithFakeDaemon(t *testing.T, handler http.HandlerFunc) *state.Store {
+	t.Helper()
+
+	store, err := state.NewStore(t.TempDir())
+	if err != nil {
+		t.Fatalf("NewStore() error = %v", err)
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/health" {
+			response.WriteJSON(w, http.StatusOK, response.OK(map[string]any{"status": "running"}, nil))
+			return
+		}
+		handler(w, r)
+	}))
+	t.Cleanup(server.Close)
+
+	addr, ok := server.Listener.Addr().(*net.TCPAddr)
+	if !ok {
+		t.Fatalf("server.Listener.Addr() type = %T, want *net.TCPAddr", server.Listener.Addr())
+	}
+	if err := store.WriteDaemonInfo(state.DaemonInfo{
+		Port:      addr.Port,
+		Token:     "secret",
+		PID:       1234,
+		StartedAt: time.Now().UTC(),
+	}); err != nil {
+		t.Fatalf("WriteDaemonInfo() error = %v", err)
+	}
+	return store
+}
 
 func TestResolveChromeBinaryPrefersEnvOverride(t *testing.T) {
 	chromePath := filepath.Join(t.TempDir(), "chrome")
@@ -145,5 +178,76 @@ func TestRunTabTextWithoutCurrentTabReturnsNotFound(t *testing.T) {
 	}
 	if got := response.ExitCode(env); got != 4 {
 		t.Fatalf("ExitCode() = %d, want 4", got)
+	}
+}
+
+func TestRunTabClickReturnsLockConflictExitCode(t *testing.T) {
+	store := newStoreWithFakeDaemon(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost && r.URL.Path == "/tabs/tab_1/action" {
+			response.WriteJSON(w, http.StatusConflict, response.Fail("lock_conflict", "tab tab_1 is locked by owner-1", nil, nil))
+			return
+		}
+		http.NotFound(w, r)
+	})
+	if err := store.PutSession(state.Session{
+		Name:         "demo",
+		InstanceID:   "inst_1",
+		CurrentTabID: "tab_1",
+		LastUsedAt:   time.Now().UTC(),
+	}); err != nil {
+		t.Fatalf("PutSession() error = %v", err)
+	}
+
+	env := runTab(context.Background(), store, GlobalOptions{Session: "demo"}, []string{"click", "--ref", "e1"})
+	if env.OK {
+		t.Fatal("runTab().OK = true, want false")
+	}
+	if env.Error == nil || env.Error.Code != "lock_conflict" {
+		t.Fatalf("runTab().Error = %#v, want lock_conflict", env.Error)
+	}
+	if got := response.ExitCode(env); got != 5 {
+		t.Fatalf("ExitCode() = %d, want 5", got)
+	}
+}
+
+func TestRunSessionListReturnsTimeoutExitCode(t *testing.T) {
+	store := newStoreWithFakeDaemon(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet && r.URL.Path == "/sessions" {
+			response.WriteJSON(w, http.StatusGatewayTimeout, response.Fail("timeout", "session list timed out", nil, nil))
+			return
+		}
+		http.NotFound(w, r)
+	})
+
+	env := runSession(context.Background(), store, GlobalOptions{Timeout: time.Second}, []string{"list"})
+	if env.OK {
+		t.Fatal("runSession().OK = true, want false")
+	}
+	if env.Error == nil || env.Error.Code != "timeout" {
+		t.Fatalf("runSession().Error = %#v, want timeout", env.Error)
+	}
+	if got := response.ExitCode(env); got != 6 {
+		t.Fatalf("ExitCode() = %d, want 6", got)
+	}
+}
+
+func TestRunSessionListReturnsUpstreamErrorExitCode(t *testing.T) {
+	store := newStoreWithFakeDaemon(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet && r.URL.Path == "/sessions" {
+			response.WriteJSON(w, http.StatusBadGateway, response.Fail("upstream_error", "pinchtab upstream failed", nil, nil))
+			return
+		}
+		http.NotFound(w, r)
+	})
+
+	env := runSession(context.Background(), store, GlobalOptions{Timeout: time.Second}, []string{"list"})
+	if env.OK {
+		t.Fatal("runSession().OK = true, want false")
+	}
+	if env.Error == nil || env.Error.Code != "upstream_error" {
+		t.Fatalf("runSession().Error = %#v, want upstream_error", env.Error)
+	}
+	if got := response.ExitCode(env); got != 7 {
+		t.Fatalf("ExitCode() = %d, want 7", got)
 	}
 }
