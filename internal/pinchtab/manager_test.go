@@ -45,6 +45,15 @@ func TestLaunchEnvWritesConfigWhenChromeBinPresent(t *testing.T) {
 	if !strings.Contains(string(raw), chromePath) {
 		t.Fatalf("config does not contain chrome path: %s", string(raw))
 	}
+	if !strings.Contains(string(raw), `"port": "9867"`) {
+		t.Fatalf("config does not contain port override: %s", string(raw))
+	}
+	if !strings.Contains(string(raw), `"bind": "127.0.0.1"`) {
+		t.Fatalf("config does not contain bind override: %s", string(raw))
+	}
+	if !strings.Contains(string(raw), `"token": "secret"`) {
+		t.Fatalf("config does not contain token override: %s", string(raw))
+	}
 }
 
 func TestResolveRuntimeUsesStoredPinchtabInfo(t *testing.T) {

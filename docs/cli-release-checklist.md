@@ -2,7 +2,7 @@
 
 상태: v0.1.2 기준 검증 완료
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-18 01:31 UTC
+마지막 갱신: 2026-03-18 01:36 UTC
 목적: `agentab CLI`를 실제 배포 가능한 제품으로 마감하기 전에 확인해야 하는 항목을 표준화하기 위함
 
 ## 1. 사용 방법
@@ -114,9 +114,9 @@
 ### 7.1 설치와 부트스트랩
 
 - [~] PinchTab이 없는 환경에서 자동 설치가 재현된다.
-  메모: 이전 검증과 worklog에는 기록되어 있으나 `v0.1.1` 공개 asset smoke는 `AGENTAB_PINCHTAB_BIN` override 기준으로 수행함.
+  메모: `main`에서는 `CHROME_BIN` 사용 시 PinchTab config에 server port/bind/token도 같이 쓰도록 수정했고, 완전 새 환경 auto-install smoke를 통과했다. 공개 릴리스 반영은 다음 patch release가 필요하다.
 - [~] 설치된 PinchTab 바이너리가 `${AGENTAB_HOME}/bin` 아래에 놓인다.
-  메모: 자동 설치 경로 자체는 구현되어 있으나 이번 공개 asset smoke에서는 override 경로를 사용함.
+  메모: `main`에서는 `${AGENTAB_HOME}/bin/pinchtab` 생성까지 재확인했다. 공개 릴리스 반영은 다음 patch release가 필요하다.
 - [x] `AGENTAB_PINCHTAB_BIN` override가 동작한다.
 - [x] `AGENTAB_HOME` override가 동작한다.
 

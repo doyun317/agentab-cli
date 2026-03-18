@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-18 01:31 UTC
+마지막 갱신: 2026-03-18 01:36 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -170,9 +170,10 @@
 - `done` PinchTab / daemon child process detach 보완
 - `done` 최신 PinchTab의 `browser.binary` 전달 보완
 - `done` 멀티 인스턴스 `tab list` 경로 수정
-- `todo` 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
+- `done` 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
 - `done` 잘못된 session / tab / 종료 코드 검증 보강
 - `todo` lock / timeout / upstream error 문서화 및 검증
+- `todo` auto-install fix 포함 next patch release 준비
 
 ### 5.3 운영성과 산출물
 
@@ -196,11 +197,11 @@
 
 ## 6. 현재 추천 1순위
 
-- 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
+- daemon 재시작 후 상태 복구 검증
 
 이유:
 
-- 공개 릴리스와 대표 오류 코드 검증은 정리됐고, 지금 남은 가장 사용자 체감이 큰 리스크는 완전히 새 환경에서 자동 설치와 첫 실행이 끝까지 재현되는지 다시 확인하는 것이기 때문
+- 대표 오류 코드와 신규 환경 auto-install smoke는 `main` 기준으로 정리됐고, 지금 남은 다음 런타임 리스크는 daemon 재시작 후 상태가 꼬이지 않는지 확인하는 것이기 때문
 
 ## 7. 출시 체크리스트 초안
 
@@ -688,4 +689,27 @@
 
 - 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
 - daemon 재시작 후 상태 복구 검증
+- `--output text` 기준 doctor 가독성 점검
+
+### 2026-03-18 01:36 UTC
+
+변경:
+
+- 완전 새 환경에서 `AGENTAB_PINCHTAB_BIN` 없이 PinchTab auto-install smoke를 다시 수행했다.
+- 이 과정에서 `CHROME_BIN`을 쓸 때 PinchTab config에 server port/bind/token이 빠져 기본 `9867`로 되돌아가는 integration bug를 발견하고 수정했다.
+- 현재 `main` 기준으로 `${AGENTAB_HOME}/bin/pinchtab` 설치, `session start`, `tab open`, `tab text`, `doctor` 확인까지 통과했다.
+
+이유:
+
+- 신규 사용자 환경에서 `CHROME_BIN`을 지정하면 auto-install이 실패할 수 있었고, 이는 공개 CLI 제품의 실제 첫 실행 경험에 직접 영향을 주는 문제였기 때문
+
+영향:
+
+- `main`에서는 PinchTab auto-install + `CHROME_BIN` 조합이 정상 동작한다.
+- 이 수정은 아직 공개 릴리스에는 없으므로 다음 patch release 후보에 포함해야 한다.
+
+후속 작업:
+
+- daemon 재시작 후 상태 복구 검증
+- auto-install fix 포함 next patch release 준비
 - `--output text` 기준 doctor 가독성 점검

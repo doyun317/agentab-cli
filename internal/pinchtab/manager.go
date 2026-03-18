@@ -174,7 +174,7 @@ func launchEnv(store *state.Store, baseURL, token string) ([]string, error) {
 
 	if chromeBinary := os.Getenv("CHROME_BIN"); chromeBinary != "" {
 		configPath := filepath.Join(store.RunDir(), "pinchtab-config.json")
-		if err := writePinchtabConfig(configPath, chromeBinary); err != nil {
+		if err := writePinchtabConfig(configPath, host, port, token, chromeBinary); err != nil {
 			return nil, err
 		}
 		env = append(env, "PINCHTAB_CONFIG="+configPath)
@@ -192,8 +192,17 @@ func isLocalBaseURL(baseURL string) bool {
 	return host == "127.0.0.1" || host == "localhost" || host == ""
 }
 
-func writePinchtabConfig(path, chromeBinary string) error {
+func writePinchtabConfig(path, host, port, token, chromeBinary string) error {
+	server := map[string]any{
+		"bind": host,
+		"port": port,
+	}
+	if token != "" {
+		server["token"] = token
+	}
+
 	payload := map[string]any{
+		"server": server,
 		"browser": map[string]any{
 			"binary": chromeBinary,
 		},
