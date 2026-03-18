@@ -18,18 +18,7 @@ Core command groups:
 - `agentab session start|list|resume|stop`
 - `agentab tab open|list|close|focus|snapshot|text|find|click|type|fill|press|hover|scroll|select|eval|screenshot|pdf`
 
-Examples:
-
-```bash
-agentab --output text doctor
-agentab session start demo
-agentab tab open --session demo https://example.com
-agentab tab snapshot --session demo
-agentab tab snapshot --session demo --save
-agentab tab find --session demo "More information"
-agentab tab screenshot --session demo --save
-agentab tab click --session demo --tab tab_123 --ref e5
-```
+Official GitHub-facing example commands live in [README.md](/workspace/agentab-cli/README.md).
 
 Global flags:
 
