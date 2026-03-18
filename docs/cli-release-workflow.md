@@ -104,7 +104,7 @@ AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
 
 - `headless`와 `headed`를 같은 기준 페이지로 검증
 - display가 없는 머신에서는 `Xvfb`로 headed smoke 재현
-- 각 모드에서 `session start -> tab open -> text -> find -> click -> text -> daemon stop` 흐름을 확인
+- 각 모드에서 `session start -> tab open -> click -> type -> fill -> press -> scroll -> daemon stop` 흐름을 확인
 
 ## 4. git 저장소가 생긴 뒤 해야 할 일
 

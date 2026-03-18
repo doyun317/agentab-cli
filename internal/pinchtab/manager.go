@@ -228,11 +228,12 @@ func resolveRuntime(store *state.Store) (string, string) {
 		return strings.TrimRight(info.BaseURL, "/"), token
 	}
 
-	port := 9867
-	if selected, err := reservePort(port); err == nil {
-		port = selected
-	} else if selected, err := reservePort(0); err == nil {
-		port = selected
+	port, err := reservePort(0)
+	if err != nil {
+		port = 9867
+		if selected, reserveErr := reservePort(port); reserveErr == nil {
+			port = selected
+		}
 	}
 	baseURL := fmt.Sprintf("http://127.0.0.1:%d", port)
 	token := os.Getenv("PINCHTAB_TOKEN")

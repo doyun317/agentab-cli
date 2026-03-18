@@ -42,3 +42,5 @@ cd /workspace/agentab-cli
 AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
 ./scripts/smoke-modes.sh
 ```
+
+This smoke validates `click`, `type`, `fill`, `press`, and `scroll` in both `headless` and `headed` modes.

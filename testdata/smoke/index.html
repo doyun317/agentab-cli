@@ -4,18 +4,144 @@
     <meta charset="utf-8">
     <title>agentab-cli smoke</title>
     <style>
-      body { font-family: sans-serif; margin: 40px; }
-      button { padding: 10px 16px; }
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+        line-height: 1.5;
+      }
+      section {
+        margin: 28px 0;
+      }
+      label,
+      input,
+      button {
+        display: block;
+        margin-top: 8px;
+      }
+      input,
+      button {
+        padding: 10px 14px;
+        width: min(420px, 100%);
+      }
+      .spacer {
+        height: 400px;
+      }
+      .scroll-panel {
+        border: 1px solid #ccc;
+        height: 220px;
+        overflow: auto;
+        padding: 16px;
+        width: min(480px, 100%);
+      }
     </style>
   </head>
   <body>
     <h1>Release Smoke</h1>
-    <p id="status">Token is hidden.</p>
-    <button id="reveal" type="button">Reveal token</button>
+    <section>
+      <p id="status">Token is hidden.</p>
+      <button id="reveal" type="button">Reveal token</button>
+    </section>
+
+    <section>
+      <label for="type-target">Type target input</label>
+      <input
+        id="type-target"
+        aria-label="Type target input"
+        placeholder="Type target input"
+        autocomplete="off"
+      >
+      <p id="type-status">TYPE-PENDING</p>
+    </section>
+
+    <section>
+      <label for="fill-target">Fill target input</label>
+      <input
+        id="fill-target"
+        aria-label="Fill target input"
+        placeholder="Fill target input"
+        autocomplete="off"
+      >
+      <p id="fill-status">FILL-PENDING</p>
+    </section>
+
+    <section>
+      <form id="press-form">
+        <label for="press-target">Press target input</label>
+        <input
+          id="press-target"
+          aria-label="Press target input"
+          placeholder="Press target input"
+          autocomplete="off"
+        >
+        <button type="submit">Submit with Enter</button>
+      </form>
+      <p id="press-status">PRESS-PENDING</p>
+    </section>
+
+    <div class="spacer"></div>
+
+    <section>
+      <h2>Scroll target</h2>
+      <p id="scroll-status">SCROLL-PENDING</p>
+      <div
+        id="scroll-panel"
+        class="scroll-panel"
+        aria-label="Scroll target panel"
+        tabindex="0"
+      >
+        <p>Scroll line 1</p>
+        <p>Scroll line 2</p>
+        <p>Scroll line 3</p>
+        <p>Scroll line 4</p>
+        <p>Scroll line 5</p>
+        <p>Scroll line 6</p>
+        <p>Scroll line 7</p>
+        <p>Scroll line 8</p>
+        <p>Scroll line 9</p>
+        <p>Scroll line 10</p>
+        <p>Scroll line 11</p>
+        <p>Scroll line 12</p>
+        <p>Scroll line 13</p>
+        <p>Scroll line 14</p>
+        <p>Scroll line 15</p>
+        <p>Scroll line 16</p>
+        <p>Scroll line 17</p>
+        <p>Scroll line 18</p>
+        <p>Scroll line 19</p>
+        <p>Scroll line 20</p>
+      </div>
+    </section>
+
     <script>
       document.getElementById("reveal").addEventListener("click", function () {
         document.getElementById("status").textContent = "MODE-SMOKE-OK";
       });
+
+      document.getElementById("type-target").addEventListener("input", function (event) {
+        document.getElementById("type-status").textContent = "TYPE-SMOKE:" + event.target.value;
+      });
+
+      document.getElementById("fill-target").addEventListener("input", function (event) {
+        document.getElementById("fill-status").textContent = "FILL-SMOKE:" + event.target.value;
+      });
+
+      document.getElementById("press-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        var value = document.getElementById("press-target").value;
+        document.getElementById("press-status").textContent = "PRESS-SMOKE:" + value;
+      });
+
+      document.getElementById("press-target").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          document.getElementById("press-status").textContent = "PRESS-SMOKE:" + event.target.value;
+        }
+      });
+
+      document.getElementById("scroll-panel").addEventListener("scroll", function (event) {
+        if (event.target.scrollTop > 120) {
+          document.getElementById("scroll-status").textContent = "SCROLL-SMOKE-OK";
+        }
+      });
     </script>
   </body>
-  </html>
+</html>

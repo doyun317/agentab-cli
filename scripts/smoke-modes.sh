@@ -71,6 +71,16 @@ run_cli() {
     "${BIN}" "$@"
 }
 
+extract_best_ref() {
+  local path="$1"
+  python3 - "${path}" <<'PY'
+import json, sys
+obj = json.load(open(sys.argv[1]))
+data = obj.get("data") or {}
+print(data.get("bestRef") or data.get("best_ref") or "")
+PY
+}
+
 run_mode() {
   local mode="$1"
   local home="${SMOKE_ROOT}/${mode}"
@@ -81,17 +91,31 @@ run_mode() {
   run_cli "${home}" tab open --session "smoke-${mode}" "${URL}" >"${prefix}/tab-open.json"
   run_cli "${home}" tab text --session "smoke-${mode}" >"${prefix}/tab-text.json"
   run_cli "${home}" tab find --session "smoke-${mode}" "Reveal token" >"${prefix}/tab-find.json"
-  local ref
-  ref="$(
-    python3 - "${prefix}/tab-find.json" <<'PY'
-import json, sys
-obj = json.load(open(sys.argv[1]))
-data = obj.get("data") or {}
-print(data.get("bestRef") or data.get("best_ref") or "")
-PY
-  )"
-  run_cli "${home}" tab click --session "smoke-${mode}" --ref "${ref}" >"${prefix}/tab-click.json"
+  local reveal_ref
+  reveal_ref="$(extract_best_ref "${prefix}/tab-find.json")"
+  run_cli "${home}" tab click --session "smoke-${mode}" --ref "${reveal_ref}" >"${prefix}/tab-click.json"
   run_cli "${home}" tab text --session "smoke-${mode}" >"${prefix}/tab-text-after-click.json"
+
+  run_cli "${home}" tab find --session "smoke-${mode}" "Type target input" >"${prefix}/tab-find-type.json"
+  local type_ref
+  type_ref="$(extract_best_ref "${prefix}/tab-find-type.json")"
+  run_cli "${home}" tab type --session "smoke-${mode}" "${type_ref}" "typed smoke value" >"${prefix}/tab-type.json"
+  run_cli "${home}" tab text --session "smoke-${mode}" >"${prefix}/tab-text-after-type.json"
+
+  run_cli "${home}" tab fill --session "smoke-${mode}" "#fill-target" "filled smoke value" >"${prefix}/tab-fill.json"
+  run_cli "${home}" tab text --session "smoke-${mode}" >"${prefix}/tab-text-after-fill.json"
+
+  run_cli "${home}" tab find --session "smoke-${mode}" "Press target input" >"${prefix}/tab-find-press.json"
+  local press_ref
+  press_ref="$(extract_best_ref "${prefix}/tab-find-press.json")"
+  run_cli "${home}" tab click --session "smoke-${mode}" --ref "${press_ref}" >"${prefix}/tab-click-press.json"
+  run_cli "${home}" tab type --session "smoke-${mode}" "${press_ref}" "enter smoke value" >"${prefix}/tab-type-press.json"
+  run_cli "${home}" tab click --session "smoke-${mode}" --ref "${press_ref}" >"${prefix}/tab-click-press-focus.json"
+  run_cli "${home}" tab press --session "smoke-${mode}" Enter >"${prefix}/tab-press.json"
+  run_cli "${home}" tab text --session "smoke-${mode}" >"${prefix}/tab-text-after-press.json"
+
+  run_cli "${home}" tab scroll --session "smoke-${mode}" --selector "#scroll-panel" 1600 >"${prefix}/tab-scroll.json"
+  run_cli "${home}" tab text --session "smoke-${mode}" >"${prefix}/tab-text-after-scroll.json"
   run_cli "${home}" daemon stop >"${prefix}/daemon-stop.json"
 }
 
@@ -119,7 +143,26 @@ from pathlib import Path
 root = Path(sys.argv[1])
 for mode in ("headless", "headed"):
     start = json.loads((root / mode / "session-start.json").read_text())
-    text = json.loads((root / mode / "tab-text-after-click.json").read_text())
-    payload = json.dumps(text)
-    print(f"{mode}: mode={start['data'].get('mode')} source={(start.get('diagnostics') or {}).get('source')} token_ok={'MODE-SMOKE-OK' in payload}")
+    click_text = json.loads((root / mode / "tab-text-after-click.json").read_text())
+    type_text = json.loads((root / mode / "tab-text-after-type.json").read_text())
+    fill_text = json.loads((root / mode / "tab-text-after-fill.json").read_text())
+    press_text = json.loads((root / mode / "tab-text-after-press.json").read_text())
+    scroll_result = json.loads((root / mode / "tab-scroll.json").read_text())
+
+    click_ok = "MODE-SMOKE-OK" in json.dumps(click_text)
+    type_ok = "TYPE-SMOKE:typed smoke value" in json.dumps(type_text)
+    fill_ok = "FILL-SMOKE:filled smoke value" in json.dumps(fill_text)
+    press_ok = "PRESS-SMOKE:enter smoke value" in json.dumps(press_text)
+    scroll_data = ((scroll_result.get("data") or {}).get("result") or {})
+    scroll_ok = scroll_data.get("scrolled") is True and int(scroll_data.get("y") or 0) >= 120
+
+    print(
+        f"{mode}: mode={start['data'].get('mode')} "
+        f"source={(start.get('diagnostics') or {}).get('source')} "
+        f"click_ok={click_ok} type_ok={type_ok} fill_ok={fill_ok} "
+        f"press_ok={press_ok} scroll_ok={scroll_ok}"
+    )
+
+    if not all((click_ok, type_ok, fill_ok, press_ok, scroll_ok)):
+        sys.exit(1)
 PY

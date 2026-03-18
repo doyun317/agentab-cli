@@ -1,7 +1,6 @@
 package pinchtab
 
 import (
-	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -78,22 +77,13 @@ func TestResolveRuntimeUsesStoredPinchtabInfo(t *testing.T) {
 	}
 }
 
-func TestResolveRuntimeFallsBackWhenDefaultPortIsOccupied(t *testing.T) {
-	ln, err := net.Listen("tcp", "127.0.0.1:9867")
-	if err != nil {
-		t.Skip("default pinchtab port is already occupied on this machine")
-	}
-	defer ln.Close()
-
+func TestResolveRuntimeUsesEphemeralLocalURL(t *testing.T) {
 	store, err := state.NewStore(t.TempDir())
 	if err != nil {
 		t.Fatalf("NewStore() error = %v", err)
 	}
 
 	baseURL, _ := resolveRuntime(store)
-	if baseURL == "http://127.0.0.1:9867" {
-		t.Fatalf("resolveRuntime() = %q, want fallback port when 9867 is occupied", baseURL)
-	}
 	if !strings.HasPrefix(baseURL, "http://127.0.0.1:") {
 		t.Fatalf("resolveRuntime() = %q, want local URL", baseURL)
 	}

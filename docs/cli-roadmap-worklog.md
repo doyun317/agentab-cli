@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-18 02:49 UTC
+마지막 갱신: 2026-03-18 03:01 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -50,9 +50,9 @@
 
 아직 마감이 필요한 것:
 
-- 입력/스크롤 등 액션 안정성 심화 검증
 - 운영성 문서와 실제 릴리스 검증 이력 정리
 - 후속 patch release 범위 결정
+- 액션 smoke를 다음 patch release 검증 기록에 반영
 
 ## 4. 단계별 로드맵
 
@@ -807,6 +807,29 @@
 - 운영성 문서와 실제 릴리스 검증 이력 정리
 - 후속 patch release 범위 결정
 
+### 2026-03-18 02:24 UTC
+
+변경:
+
+- 명시적 잘못된 세션 이름과 탭 ID를 넘겼을 때 CLI가 `not_found`와 종료 코드 `4`를 일관되게 반환하는 app 레벨 테스트를 추가했다.
+- `session stop`, `session resume`, `tab list`, `tab text`의 대표 경로에서 daemon이 돌려준 `not_found` 메시지가 그대로 사용자에게 전달되는지도 함께 고정했다.
+- release checklist의 상태 복구 섹션에서 “잘못된 session / tab 지정 시 오류 일관성” 항목을 완료로 갱신했다.
+
+이유:
+
+- 기존에는 “현재 세션 없음”, “현재 탭 없음”만 닫혀 있었고, 사용자가 명시적으로 틀린 이름이나 ID를 넣는 더 현실적인 실패 케이스는 테스트 기준선이 비어 있었기 때문
+
+영향:
+
+- 세션명/탭 ID miss에 대한 CLI 오류 계약이 문서뿐 아니라 테스트 기준으로도 더 명확해졌다.
+- 다음 1순위는 다시 로그/artifact 운영 polish 같은 사용자 경험 정리 쪽으로 넘어갈 수 있게 됐다.
+
+후속 작업:
+
+- 로그 / artifact 운영 polish
+- `v0.1.0` 실패 태그 처리 여부 결정
+- 입력/스크롤 등 액션 안정성 심화 검증
+
 ### 2026-03-18 02:33 UTC
 
 변경:
@@ -852,25 +875,26 @@
 - 운영성 문서와 실제 릴리스 검증 이력 정리
 - 후속 patch release 범위 결정
 
-### 2026-03-18 02:24 UTC
+### 2026-03-18 03:01 UTC
 
 변경:
 
-- 명시적 잘못된 세션 이름과 탭 ID를 넘겼을 때 CLI가 `not_found`와 종료 코드 `4`를 일관되게 반환하는 app 레벨 테스트를 추가했다.
-- `session stop`, `session resume`, `tab list`, `tab text`의 대표 경로에서 daemon이 돌려준 `not_found` 메시지가 그대로 사용자에게 전달되는지도 함께 고정했다.
-- release checklist의 상태 복구 섹션에서 “잘못된 session / tab 지정 시 오류 일관성” 항목을 완료로 갱신했다.
+- `testdata/smoke/index.html`을 확장해 `click`, `type`, `fill`, `press`, `scroll` 상태 변화를 한 페이지에서 검증할 수 있게 했다.
+- `scripts/smoke-modes.sh`를 확장해 `headless`와 `headed` 모두에서 액션 smoke를 수행하고 각 액션의 성공 여부를 요약 출력하도록 만들었다.
+- PinchTab local runtime이 새 홈마다 기본 `9867` 대신 사용 가능한 loopback 포트를 고르도록 하드닝해 smoke 재현 안정성을 높였다.
 
 이유:
 
-- 기존에는 “현재 세션 없음”, “현재 탭 없음”만 닫혀 있었고, 사용자가 명시적으로 틀린 이름이나 ID를 넣는 더 현실적인 실패 케이스는 테스트 기준선이 비어 있었기 때문
+- 체크리스트에서 남아 있던 액션 안정성 항목을 실제 브라우저 기준으로 닫으려면 `click`뿐 아니라 `type`, `fill`, `press`, `scroll`까지 재현 가능한 smoke 흐름이 필요했고, 고정 포트 의존성은 반복 검증을 흔들 수 있었기 때문
 
 영향:
 
-- 세션명/탭 ID miss에 대한 CLI 오류 계약이 문서뿐 아니라 테스트 기준으로도 더 명확해졌다.
-- 다음 1순위는 다시 로그/artifact 운영 polish 같은 사용자 경험 정리 쪽으로 넘어갈 수 있게 됐다.
+- `scripts/smoke-modes.sh` 기준으로 `headless`, `headed` 둘 다 `click_ok=True`, `type_ok=True`, `fill_ok=True`, `press_ok=True`, `scroll_ok=True`를 확인할 수 있게 됐다.
+- release checklist의 액션 안정성 항목을 완료로 전환할 수 있게 됐다.
+- `${AGENTAB_HOME}`별 PinchTab runtime 분리가 더 안정적으로 동작한다.
 
 후속 작업:
 
-- 로그 / artifact 운영 polish
-- `v0.1.0` 실패 태그 처리 여부 결정
-- 입력/스크롤 등 액션 안정성 심화 검증
+- 운영성 문서와 실제 릴리스 검증 이력 정리
+- 후속 patch release 범위 결정
+- 필요하면 공개 release asset 기준 액션 smoke 한 번 더 수행
