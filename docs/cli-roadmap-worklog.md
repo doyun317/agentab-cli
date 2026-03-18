@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-18 02:12 UTC
+마지막 갱신: 2026-03-18 02:20 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -51,8 +51,8 @@
 아직 마감이 필요한 것:
 
 - 명시적 잘못된 session/tab ID 케이스 보강
-- `doctor --output text` 가독성 점검
 - 로그 / artifact 운영 polish
+- `v0.1.0` 실패 태그 처리 여부 결정
 
 ## 4. 단계별 로드맵
 
@@ -782,4 +782,27 @@
 
 - `doctor --output text` 기준 가독성 점검
 - 명시적 잘못된 session/tab ID 케이스 보강
+- `v0.1.0` 실패 태그 처리 여부 결정
+
+### 2026-03-18 02:20 UTC
+
+변경:
+
+- `doctor` 응답을 전용 report 타입으로 바꿔 JSON 계약은 유지하면서 `--output text`에서 사람이 읽기 쉬운 섹션형 출력이 나오도록 정리했다.
+- `response` 레이어에 text renderer 훅을 추가해 `doctor` 같은 명령이 pretty JSON 대신 맞춤형 text 출력을 제공할 수 있게 했다.
+- app/response 테스트를 보강하고 실제 `agentab --output text doctor` 실행 결과를 설치/트러블슈팅 문서에 반영했다.
+
+이유:
+
+- 기존 `--output text`는 사실상 pretty JSON이라 사람이 직접 환경 문제를 읽고 판단하기에 정보 우선순위가 잘 드러나지 않았기 때문
+
+영향:
+
+- `doctor`는 이제 `home / chrome / pinchtab / daemon` 기준으로 핵심 상태를 바로 읽을 수 있다.
+- JSON-first 계약은 그대로라 에이전트나 스크립트 소비자와의 호환성은 유지된다.
+
+후속 작업:
+
+- 명시적 잘못된 session/tab ID 케이스 보강
+- 로그 / artifact 운영 polish
 - `v0.1.0` 실패 태그 처리 여부 결정

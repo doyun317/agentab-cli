@@ -2,7 +2,7 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-17 06:19 UTC  
+마지막 갱신: 2026-03-18 02:20 UTC
 목적: `agentab CLI`를 처음 설치하고 실행하는 사용자가 최소한의 브라우저 조작까지 바로 재현할 수 있게 하기 위함
 
 ## 1. 무엇이 설치되는가
@@ -64,7 +64,7 @@ go build -o agentab ./cmd/agentab
 먼저 `doctor`로 현재 상태를 확인합니다.
 
 ```bash
-agentab doctor
+agentab --output text doctor
 ```
 
 또는 저장소에서 직접 실행:
@@ -84,6 +84,27 @@ go run ./cmd/agentab doctor
 - `chromeBin`
 - `chromeBinFound`
 - `chromeBinSource`
+
+예시:
+
+```text
+agentab doctor
+home: /home/you/.agentab
+artifacts: /home/you/.agentab/artifacts
+managed pinchtab bin: /home/you/.agentab/bin/pinchtab
+
+chrome
+  status: ok
+  source: env
+  path: /path/to/chrome
+
+pinchtab
+  health: ok
+  url: http://127.0.0.1:43921
+
+daemon
+  status: running
+```
 
 ## 5. 첫 브라우저 조작
 

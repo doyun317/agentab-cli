@@ -91,32 +91,30 @@ func runDoctor(ctx context.Context, store *state.Store) response.Envelope {
 	chrome := resolveChromeBinary()
 
 	daemonInfo, daemonErr := store.ReadDaemonInfo()
-	data := map[string]any{
-		"agentabHome":     store.Root(),
-		"artifactsDir":    store.ArtifactsDir(),
-		"managedBinPath":  inst.ManagedBinaryPath(),
-		"pinchtabURL":     pinchURL,
-		"pinchtabHealthy": healthErr == nil,
-		"chromeBin":       chrome.Path,
-		"chromeBinFound":  chrome.Found,
-		"chromeBinSource": chrome.Source,
-	}
-	if chrome.Error != "" {
-		data["chromeBinError"] = chrome.Error
+	report := doctorReport{
+		AgentabHome:     store.Root(),
+		ArtifactsDir:    store.ArtifactsDir(),
+		ManagedBinPath:  inst.ManagedBinaryPath(),
+		PinchtabURL:     pinchURL,
+		PinchtabHealthy: healthErr == nil,
+		ChromeBin:       chrome.Path,
+		ChromeBinFound:  chrome.Found,
+		ChromeBinSource: chrome.Source,
+		ChromeBinError:  chrome.Error,
 	}
 	if err == nil {
-		data["pinchtabBin"] = path
-		data["pinchtabManaged"] = managed
+		report.PinchtabBin = path
+		report.PinchtabManaged = boolPtr(managed)
 	} else {
-		data["pinchtabBinError"] = err.Error()
+		report.PinchtabBinError = err.Error()
 	}
 	if daemonErr == nil {
-		data["daemon"] = daemonInfo
+		report.Daemon = &daemonInfo
 	}
 	if info, infoErr := store.ReadPinchtabInfo(); infoErr == nil {
-		data["pinchtab"] = info
+		report.Pinchtab = &info
 	}
-	return response.OK(data, nil)
+	return response.OK(report, nil)
 }
 
 type chromeBinaryInfo struct {

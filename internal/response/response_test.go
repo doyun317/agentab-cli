@@ -1,6 +1,10 @@
 package response
 
-import "testing"
+import (
+	"bytes"
+	"strings"
+	"testing"
+)
 
 func TestExitCode(t *testing.T) {
 	tests := []struct {
@@ -24,5 +28,41 @@ func TestExitCode(t *testing.T) {
 				t.Fatalf("ExitCode() = %d, want %d", got, tt.want)
 			}
 		})
+	}
+}
+
+type fakeTextRenderer struct{}
+
+func (fakeTextRenderer) RenderText() string {
+	return "rendered text output"
+}
+
+func TestPrintTextUsesRenderer(t *testing.T) {
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	if err := printText(&stdout, &stderr, OK(fakeTextRenderer{}, nil)); err != nil {
+		t.Fatalf("printText() error = %v", err)
+	}
+	if got := stdout.String(); got != "rendered text output\n" {
+		t.Fatalf("stdout = %q, want rendered output", got)
+	}
+	if stderr.Len() != 0 {
+		t.Fatalf("stderr = %q, want empty", stderr.String())
+	}
+}
+
+func TestPrintTextErrorIncludesMessage(t *testing.T) {
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	if err := printText(&stdout, &stderr, Fail("not_found", "missing session", nil, nil)); err != nil {
+		t.Fatalf("printText() error = %v", err)
+	}
+	if stdout.Len() != 0 {
+		t.Fatalf("stdout = %q, want empty", stdout.String())
+	}
+	if got := stderr.String(); !strings.Contains(got, "not_found: missing session") {
+		t.Fatalf("stderr = %q, want error message", got)
 	}
 }

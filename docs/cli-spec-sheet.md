@@ -166,6 +166,7 @@
 
 - `--output json`은 전체 envelope를 출력한다.
 - `--output text`는 성공 시 사람이 읽기 쉬운 결과를 출력한다.
+- `doctor --output text`는 `home / chrome / pinchtab / daemon` 섹션으로 요약 출력한다.
 - `--output text`에서도 실패는 구조화된 에러 의미를 보존한다.
 
 ## 7. 오류 코드와 종료 코드

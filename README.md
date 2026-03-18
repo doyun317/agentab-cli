@@ -24,7 +24,7 @@ With the local toolchains installed, you can run:
 ```bash
 export PATH="/workspace/agentab-cli/.tools/go/bin:$PATH"
 cd /workspace/agentab-cli
-go run ./cmd/agentab doctor
+go run ./cmd/agentab --output text doctor
 ```
 
 CLI-focused docs:

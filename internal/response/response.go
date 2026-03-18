@@ -3,6 +3,7 @@ package response
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 )
@@ -18,6 +19,10 @@ type Envelope struct {
 	Data        any            `json:"data,omitempty"`
 	Error       *ErrorBody     `json:"error,omitempty"`
 	Diagnostics map[string]any `json:"diagnostics,omitempty"`
+}
+
+type TextRenderer interface {
+	RenderText() string
 }
 
 func OK(data any, diagnostics map[string]any) Envelope {
@@ -40,33 +45,37 @@ func WriteJSON(w http.ResponseWriter, status int, env Envelope) {
 
 func Print(env Envelope, format string) error {
 	if format == "text" {
-		return printText(env)
+		return printText(os.Stdout, os.Stderr, env)
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	return enc.Encode(env)
 }
 
-func printText(env Envelope) error {
+func printText(stdout, stderr io.Writer, env Envelope) error {
 	if env.OK {
-		if text, ok := env.Data.(string); ok {
-			_, err := fmt.Fprintln(os.Stdout, text)
+		if renderer, ok := env.Data.(TextRenderer); ok {
+			_, err := fmt.Fprintln(stdout, renderer.RenderText())
 			return err
 		}
-		enc := json.NewEncoder(os.Stdout)
+		if text, ok := env.Data.(string); ok {
+			_, err := fmt.Fprintln(stdout, text)
+			return err
+		}
+		enc := json.NewEncoder(stdout)
 		enc.SetIndent("", "  ")
 		return enc.Encode(env.Data)
 	}
 
 	if env.Error == nil {
-		_, err := fmt.Fprintln(os.Stderr, "unknown error")
+		_, err := fmt.Fprintln(stderr, "unknown error")
 		return err
 	}
-	if _, err := fmt.Fprintf(os.Stderr, "%s: %s\n", env.Error.Code, env.Error.Message); err != nil {
+	if _, err := fmt.Fprintf(stderr, "%s: %s\n", env.Error.Code, env.Error.Message); err != nil {
 		return err
 	}
 	if env.Error.Details != nil {
-		enc := json.NewEncoder(os.Stderr)
+		enc := json.NewEncoder(stderr)
 		enc.SetIndent("", "  ")
 		return enc.Encode(env.Error.Details)
 	}

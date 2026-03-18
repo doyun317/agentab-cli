@@ -2,14 +2,14 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-17 06:19 UTC  
+마지막 갱신: 2026-03-18 02:20 UTC
 목적: `agentab CLI` 사용 중 자주 나오는 설치, daemon, 브라우저, 상태 관련 문제를 빠르게 해결하기 위함
 
 ## 1. 먼저 확인할 것
 
 문제가 생기면 가장 먼저 아래 3가지를 확인합니다.
 
-1. `agentab doctor`
+1. `agentab --output text doctor`
 2. `${AGENTAB_HOME}/logs/agentab-daemon.log`
 3. `${AGENTAB_HOME}/logs/pinchtab.log`
 
@@ -204,7 +204,7 @@ agentab daemon start
 문제 재현을 단순하게 하려면 이 순서가 좋습니다.
 
 ```bash
-agentab doctor
+agentab --output text doctor
 agentab daemon status
 agentab session start demo
 agentab tab open --session demo https://example.com
@@ -217,7 +217,7 @@ agentab tab text --session demo
 
 함께 남기면 좋은 정보:
 
-- `agentab doctor` 출력
+- `agentab --output text doctor` 출력
 - 실행한 정확한 명령
 - `${AGENTAB_HOME}/logs/agentab-daemon.log`
 - `${AGENTAB_HOME}/logs/pinchtab.log`

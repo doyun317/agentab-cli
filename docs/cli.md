@@ -21,6 +21,7 @@ Core command groups:
 Examples:
 
 ```bash
+agentab --output text doctor
 agentab session start demo
 agentab tab open --session demo https://example.com
 agentab tab snapshot --session demo
@@ -40,6 +41,11 @@ Global flags:
 - `--timeout`
 - `--output`
 - `--debug`
+
+Text output notes:
+
+- `agentab --output text doctor` prints a human-friendly health summary instead of raw JSON.
+- `--output json` keeps the full machine-readable envelope for scripts and agents.
 
 Artifact options:
 

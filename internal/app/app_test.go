@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -120,21 +121,70 @@ func TestRunDoctorReflectsChromeBinOverride(t *testing.T) {
 		t.Fatalf("runDoctor() returned error: %+v", env.Error)
 	}
 
-	data, ok := env.Data.(map[string]any)
+	data, ok := env.Data.(doctorReport)
 	if !ok {
-		t.Fatalf("runDoctor().Data type = %T, want map[string]any", env.Data)
+		t.Fatalf("runDoctor().Data type = %T, want doctorReport", env.Data)
 	}
-	if got := data["chromeBin"]; got != chromePath {
-		t.Fatalf("runDoctor().Data[chromeBin] = %v, want %q", got, chromePath)
+	if got := data.ChromeBin; got != chromePath {
+		t.Fatalf("runDoctor().Data.ChromeBin = %q, want %q", got, chromePath)
 	}
-	if got := data["chromeBinSource"]; got != "env" {
-		t.Fatalf("runDoctor().Data[chromeBinSource] = %v, want env", got)
+	if got := data.ChromeBinSource; got != "env" {
+		t.Fatalf("runDoctor().Data.ChromeBinSource = %q, want env", got)
 	}
-	if got := data["chromeBinFound"]; got != true {
-		t.Fatalf("runDoctor().Data[chromeBinFound] = %v, want true", got)
+	if got := data.ChromeBinFound; got != true {
+		t.Fatalf("runDoctor().Data.ChromeBinFound = %v, want true", got)
 	}
-	if _, exists := data["chromeBinError"]; exists {
-		t.Fatalf("runDoctor().Data contains chromeBinError, want no error: %v", data["chromeBinError"])
+	if data.ChromeBinError != "" {
+		t.Fatalf("runDoctor().Data.ChromeBinError = %q, want empty", data.ChromeBinError)
+	}
+}
+
+func TestDoctorReportRenderText(t *testing.T) {
+	report := doctorReport{
+		AgentabHome:     "/tmp/agentab",
+		ArtifactsDir:    "/tmp/agentab/artifacts",
+		ManagedBinPath:  "/tmp/agentab/bin/pinchtab",
+		PinchtabURL:     "http://127.0.0.1:43921",
+		PinchtabHealthy: true,
+		PinchtabBin:     "/tmp/agentab/bin/pinchtab",
+		PinchtabManaged: boolPtr(true),
+		ChromeBin:       "/usr/bin/google-chrome",
+		ChromeBinFound:  true,
+		ChromeBinSource: "env",
+		Daemon: &state.DaemonInfo{
+			Port:      43921,
+			Token:     "secret",
+			PID:       1234,
+			StartedAt: time.Date(2026, 3, 18, 3, 4, 5, 0, time.UTC),
+		},
+		Pinchtab: &state.PinchtabInfo{
+			BaseURL:   "http://127.0.0.1:43921",
+			Token:     "secret",
+			PID:       5678,
+			StartedAt: time.Date(2026, 3, 18, 3, 4, 7, 0, time.UTC),
+		},
+	}
+
+	text := report.RenderText()
+	for _, want := range []string{
+		"agentab doctor",
+		"home: /tmp/agentab",
+		"chrome",
+		"status: ok",
+		"source: env",
+		"path: /usr/bin/google-chrome",
+		"pinchtab",
+		"managed binary: yes",
+		"runtime pid: 5678",
+		"runtime token: present",
+		"daemon",
+		"status: running",
+		"port: 43921",
+		"token: present",
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("RenderText() missing %q in:\n%s", want, text)
+		}
 	}
 }
 
