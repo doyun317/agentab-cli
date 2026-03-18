@@ -41,7 +41,7 @@ Mode smoke:
 
 ```bash
 cd /workspace/agentab-cli
-AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
+AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.4/extract/agentab \
 ./scripts/smoke-modes.sh
 ```
 

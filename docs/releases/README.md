@@ -14,6 +14,7 @@
 | `v0.1.1` | [v0.1.1.md](/workspace/agentab-cli/docs/releases/v0.1.1.md) | [v0.1.1-verification.md](/workspace/agentab-cli/docs/releases/v0.1.1-verification.md) | 첫 성공 공개 릴리스 |
 | `v0.1.2` | [v0.1.2.md](/workspace/agentab-cli/docs/releases/v0.1.2.md) | [v0.1.2-verification.md](/workspace/agentab-cli/docs/releases/v0.1.2-verification.md) | `tab list`와 `doctor.chromeBin` 보강 |
 | `v0.1.3` | [v0.1.3.md](/workspace/agentab-cli/docs/releases/v0.1.3.md) | [v0.1.3-verification.md](/workspace/agentab-cli/docs/releases/v0.1.3-verification.md) | auto-install / daemon cleanup / headed-headless smoke 보강 |
+| `v0.1.4` | [v0.1.4.md](/workspace/agentab-cli/docs/releases/v0.1.4.md) | [v0.1.4-verification.md](/workspace/agentab-cli/docs/releases/v0.1.4-verification.md) | 운영성 개선 / action smoke 확대 / runtime 포트 하드닝 |
 
 ## 현재 `main`의 추가 하드닝
 

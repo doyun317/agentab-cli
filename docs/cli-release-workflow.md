@@ -2,7 +2,7 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-18 02:12 UTC
+마지막 갱신: 2026-03-18 04:36 UTC
 목적: `agentab CLI`의 배포 방식을 `GitHub Releases + GoReleaser`로 고정하고, GitHub 저장소 생성 전후에 무엇을 해야 하는지 분리해 정리하기 위함
 
 ## 1. 선택한 배포 방식
@@ -77,12 +77,12 @@ cd /workspace/agentab-cli
 
 예시 산출물:
 
-- `agentab-cli_0.1.3-snapshot_linux_x86_64.tar.gz`
-- `agentab-cli_0.1.3-snapshot_linux_arm64.tar.gz`
-- `agentab-cli_0.1.3-snapshot_macOS_x86_64.tar.gz`
-- `agentab-cli_0.1.3-snapshot_macOS_arm64.tar.gz`
-- `agentab-cli_0.1.3-snapshot_windows_x86_64.zip`
-- `agentab-cli_0.1.3-snapshot_windows_arm64.zip`
+- `agentab-cli_0.1.4-snapshot_linux_x86_64.tar.gz`
+- `agentab-cli_0.1.4-snapshot_linux_arm64.tar.gz`
+- `agentab-cli_0.1.4-snapshot_macOS_x86_64.tar.gz`
+- `agentab-cli_0.1.4-snapshot_macOS_arm64.tar.gz`
+- `agentab-cli_0.1.4-snapshot_windows_x86_64.zip`
+- `agentab-cli_0.1.4-snapshot_windows_arm64.zip`
 - `checksums.txt`
 
 참고:
@@ -96,7 +96,7 @@ cd /workspace/agentab-cli
 
 ```bash
 cd /workspace/agentab-cli
-AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
+AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.4/extract/agentab \
 ./scripts/smoke-modes.sh
 ```
 
@@ -157,7 +157,7 @@ AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
 
 1. patch 변경사항 커밋 및 `main` 반영
 2. 릴리스 노트 정리
-3. `v0.1.3` 태그 푸시
+3. `v0.1.4` 태그 푸시
 4. GitHub Release 결과 검증
 
 관련 문서:
