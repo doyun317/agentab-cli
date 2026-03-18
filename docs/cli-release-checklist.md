@@ -1,8 +1,8 @@
 # agentab CLI 릴리스 체크리스트
 
-상태: v0.1.2 기준 검증 완료
+상태: v0.1.3 기준 검증 완료
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-18 01:41 UTC
+마지막 갱신: 2026-03-18 02:06 UTC
 목적: `agentab CLI`를 실제 배포 가능한 제품으로 마감하기 전에 확인해야 하는 항목을 표준화하기 위함
 
 ## 1. 사용 방법
@@ -26,12 +26,12 @@
 릴리스 버전:
 
 - [x] 버전 태그 확정
-  값: `v0.1.2`
+  값: `v0.1.3`
 
 검증 일시:
 
 - [x] UTC 시각 기록
-  값: `2026-03-17 08:53 UTC`
+  값: `2026-03-18 02:06 UTC`
 
 검증 환경:
 
@@ -113,10 +113,8 @@
 
 ### 7.1 설치와 부트스트랩
 
-- [~] PinchTab이 없는 환경에서 자동 설치가 재현된다.
-  메모: `main`에서는 `CHROME_BIN` 사용 시 PinchTab config에 server port/bind/token도 같이 쓰도록 수정했고, 완전 새 환경 auto-install smoke를 통과했다. 공개 릴리스 반영은 다음 patch release가 필요하다.
-- [~] 설치된 PinchTab 바이너리가 `${AGENTAB_HOME}/bin` 아래에 놓인다.
-  메모: `main`에서는 `${AGENTAB_HOME}/bin/pinchtab` 생성까지 재확인했다. 공개 릴리스 반영은 다음 patch release가 필요하다.
+- [x] PinchTab이 없는 환경에서 자동 설치가 재현된다.
+- [x] 설치된 PinchTab 바이너리가 `${AGENTAB_HOME}/bin` 아래에 놓인다.
 - [x] `AGENTAB_PINCHTAB_BIN` override가 동작한다.
 - [x] `AGENTAB_HOME` override가 동작한다.
 
@@ -125,7 +123,7 @@
 - [x] daemon auto-start가 동작한다.
 - [x] `agentab daemon status`가 현재 상태를 보여준다.
 - [x] `agentab daemon stop` 후 상태가 정리된다.
-- [ ] 재실행 시 기존 daemon 정보와 충돌하지 않는다.
+- [x] 재실행 시 기존 daemon 정보와 충돌하지 않는다.
 
 ### 7.3 상태와 복구
 
@@ -133,15 +131,14 @@
 - [x] current tab이 기대대로 갱신된다.
 - [~] 잘못된 session / tab 지정 시 오류가 일관적이다.
   메모: 대표 `not_found` 경로인 “현재 세션 없음”, “현재 탭 없음”은 테스트로 검증했다. 추가로 명시적 잘못된 이름/ID 케이스는 후속 보강 여지가 있다.
-- [~] daemon 재시작 후에도 상태가 비정상적으로 꼬이지 않는다.
-  메모: `main`에서는 daemon shutdown 경로가 daemon metadata, pinchtab metadata, session state를 함께 비우도록 수정했고 테스트로 검증했다. 공개 릴리스 반영과 full restart smoke는 다음 patch release에서 다시 확인 필요하다.
+- [x] daemon 재시작 후에도 상태가 비정상적으로 꼬이지 않는다.
 
 ### 7.4 액션 안정성
 
 - [~] 클릭, 입력, 스크롤 기본 동작이 실제 페이지에서 재현된다.
   메모: 클릭은 공개 asset 기준으로 검증했고 입력/스크롤은 이번 릴리스 검증 범위에 포함하지 않았다.
-- [ ] lock conflict가 재현되면 올바른 오류 코드와 메시지가 나온다.
-- [ ] upstream 오류가 JSON envelope로 표준화된다.
+- [x] lock conflict가 재현되면 올바른 오류 코드와 메시지가 나온다.
+- [x] upstream 오류가 JSON envelope로 표준화된다.
 
 ## 8. 테스트 검증
 
@@ -186,6 +183,5 @@
 메모:
 
 - [x] 남은 이슈 기록
-  - 심화 검증 항목 중 headed/headless 이중 확인과 full restart smoke는 후속 작업으로 남아 있다.
-  - `main`에는 auto-install / daemon state cleanup fix가 반영됐고, 다음 patch release에 포함해야 한다.
+  - 심화 검증 항목 중 headed/headless 이중 확인과 일부 명시적 잘못된 session/tab ID 케이스는 후속 작업으로 남아 있다.
   - 첫 실패 태그 `v0.1.0`은 남아 있고, 실제 사용 기준 릴리스는 `v0.1.1`이다.
