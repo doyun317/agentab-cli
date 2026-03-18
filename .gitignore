@@ -4,3 +4,4 @@ coverage.out
 *.log
 dist/
 tmp/
+docs-local/

@@ -8,7 +8,6 @@ The project goal is simple: an agent or a human should be able to drive a real b
 
 - `cmd/` implements the CLI entrypoint
 - `internal/` implements the daemon, local state, PinchTab installer, and tests
-- `docs/` contains CLI guides and release notes
 - `scripts/` contains local toolchain bootstrap and test helpers
 
 ## Quick Start
@@ -67,17 +66,11 @@ agentab session stop demo
 agentab daemon stop
 ```
 
-## More Docs
+## Local Docs Boundary
 
-Deeper local docs:
+Operational notes, worklogs, release checklists, and verification documents are kept in a local `docs-local/` directory and are not tracked in the public repository.
 
-- [CLI overview](docs/cli.md)
-- [CLI install and first run](docs/cli-install.md)
-- [CLI troubleshooting](docs/cli-troubleshooting.md)
-- [CLI operations runbook](docs/cli-operations-runbook.md)
-- [CLI release workflow](docs/cli-release-workflow.md)
-- [CLI release checklist](docs/cli-release-checklist.md)
-- [Release verification history](docs/releases/README.md)
+Public release history should be read from the GitHub Releases page.
 
 Mode smoke:
 
