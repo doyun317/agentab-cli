@@ -2,7 +2,7 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-18 01:41 UTC
+마지막 갱신: 2026-03-18 02:12 UTC
 목적: `agentab CLI`의 배포 방식을 `GitHub Releases + GoReleaser`로 고정하고, GitHub 저장소 생성 전후에 무엇을 해야 하는지 분리해 정리하기 위함
 
 ## 1. 선택한 배포 방식
@@ -89,6 +89,22 @@ cd /workspace/agentab-cli
 
 - `dist/agentab_linux_amd64_v1/` 같은 디렉터리 이름은 GoReleaser 내부 build 산출물 경로다.
 - 사용자가 직접 받게 되는 릴리스 asset 이름은 위의 archive 이름처럼 정리된다.
+
+## 3.3 모드 smoke 검증
+
+`headless`와 `headed`를 둘 다 확인하려면 아래 스크립트를 사용한다.
+
+```bash
+cd /workspace/agentab-cli
+AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
+./scripts/smoke-modes.sh
+```
+
+의도:
+
+- `headless`와 `headed`를 같은 기준 페이지로 검증
+- display가 없는 머신에서는 `Xvfb`로 headed smoke 재현
+- 각 모드에서 `session start -> tab open -> text -> find -> click -> text -> daemon stop` 흐름을 확인
 
 ## 4. git 저장소가 생긴 뒤 해야 할 일
 

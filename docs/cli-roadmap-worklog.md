@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-18 02:06 UTC
+마지막 갱신: 2026-03-18 02:12 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -50,9 +50,9 @@
 
 아직 마감이 필요한 것:
 
-- 종료 코드와 오류 일관성의 남은 검증 항목 정리
-- 신규 환경 자동 설치 smoke 보강
-- text output / 로그 / artifact 운영 polish
+- 명시적 잘못된 session/tab ID 케이스 보강
+- `doctor --output text` 가독성 점검
+- 로그 / artifact 운영 polish
 
 ## 4. 단계별 로드맵
 
@@ -173,6 +173,7 @@
 - `done` 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
 - `done` 잘못된 session / tab / 종료 코드 검증 보강
 - `done` daemon shutdown 시 runtime/session state 정리
+- `done` headed / headless 이중 smoke
 - `todo` lock / timeout / upstream error 문서화 및 검증
 - `done` auto-install / daemon cleanup fix 포함 next patch release 발행
 
@@ -198,11 +199,11 @@
 
 ## 6. 현재 추천 1순위
 
-- headed / headless 이중 smoke
+- `doctor --output text` 가독성 점검
 
 이유:
 
-- 공개 릴리스 기준으로 auto-install, daemon cleanup, 재기동 검증까지 끝났고, 남은 가장 직접적인 사용자 체감 검증은 두 모드를 모두 다시 확인하는 것이기 때문
+- 릴리스 기준 기능/모드 smoke는 상당 부분 닫혔고, 지금 남은 가장 직접적인 사용자 경험 개선은 사람이 직접 읽는 `doctor --output text`의 품질을 점검하는 것이기 때문
 
 ## 7. 출시 체크리스트 초안
 
@@ -758,4 +759,27 @@
 
 - headed/headless 이중 smoke
 - `--output text` 기준 doctor 가독성 점검
+- `v0.1.0` 실패 태그 처리 여부 결정
+
+### 2026-03-18 02:12 UTC
+
+변경:
+
+- `scripts/smoke-modes.sh`를 추가해 headless와 headed smoke를 한 번에 재현할 수 있게 했다.
+- 가상 디스플레이가 없는 머신에서는 `Xvfb`를 띄워 headed smoke를 같은 DISPLAY에서 끝까지 실행하도록 구성했다.
+- 공개 `v0.1.3` asset 기준으로 `headless`, `headed` 둘 다 `session start -> tab open -> text -> find -> click -> text -> daemon stop` 흐름을 통과했다.
+
+이유:
+
+- 앞선 headed 시도는 각 명령을 별도 `xvfb-run`으로 감싸는 바람에 DISPLAY lifetime이 끊겨 실패했고, 이를 재사용 가능한 올바른 smoke 흐름으로 정리할 필요가 있었기 때문
+
+영향:
+
+- 모드별 smoke가 릴리스 이후 수동 지식이 아니라 저장소 안의 재현 가능한 스크립트가 되었다.
+- CLI release checklist의 headed/headless 확인 항목을 완료로 바꿀 수 있게 되었다.
+
+후속 작업:
+
+- `doctor --output text` 기준 가독성 점검
+- 명시적 잘못된 session/tab ID 케이스 보강
 - `v0.1.0` 실패 태그 처리 여부 결정

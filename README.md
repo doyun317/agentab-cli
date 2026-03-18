@@ -34,3 +34,11 @@ CLI-focused docs:
 - [CLI troubleshooting](/workspace/agentab-cli/docs/cli-troubleshooting.md)
 - [CLI release workflow](/workspace/agentab-cli/docs/cli-release-workflow.md)
 - [CLI release checklist](/workspace/agentab-cli/docs/cli-release-checklist.md)
+
+Mode smoke:
+
+```bash
+cd /workspace/agentab-cli
+AGENTAB_BIN=/workspace/agentab-cli/tmp/release-v0.1.3/extract/agentab \
+./scripts/smoke-modes.sh
+```

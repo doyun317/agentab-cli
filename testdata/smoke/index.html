@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>agentab-cli smoke</title>
+    <style>
+      body { font-family: sans-serif; margin: 40px; }
+      button { padding: 10px 16px; }
+    </style>
+  </head>
+  <body>
+    <h1>Release Smoke</h1>
+    <p id="status">Token is hidden.</p>
+    <button id="reveal" type="button">Reveal token</button>
+    <script>
+      document.getElementById("reveal").addEventListener("click", function () {
+        document.getElementById("status").textContent = "MODE-SMOKE-OK";
+      });
+    </script>
+  </body>
+  </html>
