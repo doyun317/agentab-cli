@@ -285,6 +285,21 @@ func TestServerServeShutdownClearsDaemonInfo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewStore() error = %v", err)
 	}
+	if err := store.PutSession(state.Session{
+		Name:         "demo",
+		InstanceID:   "inst_123",
+		CurrentTabID: "tab_1",
+		LastUsedAt:   time.Now().UTC(),
+	}); err != nil {
+		t.Fatalf("PutSession() error = %v", err)
+	}
+	if err := store.WritePinchtabInfo(state.PinchtabInfo{
+		BaseURL: "http://127.0.0.1:9877",
+		Token:   "secret",
+		PID:     5151,
+	}); err != nil {
+		t.Fatalf("WritePinchtabInfo() error = %v", err)
+	}
 	server := NewServer(store, pinchtab.NewManager(store), "secret", 0)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -308,5 +323,14 @@ func TestServerServeShutdownClearsDaemonInfo(t *testing.T) {
 
 	if _, err := store.ReadDaemonInfo(); err != state.ErrNotFound {
 		t.Fatalf("ReadDaemonInfo() after shutdown error = %v, want %v", err, state.ErrNotFound)
+	}
+	if _, err := store.ReadPinchtabInfo(); err != state.ErrNotFound {
+		t.Fatalf("ReadPinchtabInfo() after shutdown error = %v, want %v", err, state.ErrNotFound)
+	}
+	if sessions, err := store.ListSessions(); err != nil || len(sessions) != 0 {
+		t.Fatalf("ListSessions() after shutdown = %+v, %v; want empty", sessions, err)
+	}
+	if _, err := store.CurrentSession(); err != state.ErrNotFound {
+		t.Fatalf("CurrentSession() after shutdown error = %v, want %v", err, state.ErrNotFound)
 	}
 }

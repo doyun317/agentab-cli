@@ -107,6 +107,8 @@ func (s *Server) Serve(ctx context.Context) error {
 func (s *Server) Shutdown(ctx context.Context) error {
 	_ = s.manager.ShutdownOwned()
 	_ = s.store.ClearDaemonInfo()
+	_ = s.store.ClearPinchtabInfo()
+	_ = s.store.ClearSessions()
 	if s.srv == nil {
 		return nil
 	}

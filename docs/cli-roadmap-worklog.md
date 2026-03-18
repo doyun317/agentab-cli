@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-18 01:36 UTC
+마지막 갱신: 2026-03-18 01:41 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -172,6 +172,7 @@
 - `done` 멀티 인스턴스 `tab list` 경로 수정
 - `done` 완전 새 환경 기준 PinchTab 자동 설치 smoke 재검증
 - `done` 잘못된 session / tab / 종료 코드 검증 보강
+- `done` daemon shutdown 시 runtime/session state 정리
 - `todo` lock / timeout / upstream error 문서화 및 검증
 - `todo` auto-install fix 포함 next patch release 준비
 
@@ -197,11 +198,11 @@
 
 ## 6. 현재 추천 1순위
 
-- daemon 재시작 후 상태 복구 검증
+- auto-install / daemon cleanup fix 포함 next patch release 준비
 
 이유:
 
-- 대표 오류 코드와 신규 환경 auto-install smoke는 `main` 기준으로 정리됐고, 지금 남은 다음 런타임 리스크는 daemon 재시작 후 상태가 꼬이지 않는지 확인하는 것이기 때문
+- `main`에는 사용자 체감이 큰 auto-install / daemon cleanup fix가 이미 들어갔고, 지금 가장 가치가 큰 다음 액션은 이를 공개 릴리스에 반영하는 것이기 때문
 
 ## 7. 출시 체크리스트 초안
 
@@ -712,4 +713,26 @@
 
 - daemon 재시작 후 상태 복구 검증
 - auto-install fix 포함 next patch release 준비
+- `--output text` 기준 doctor 가독성 점검
+
+### 2026-03-18 01:41 UTC
+
+변경:
+
+- daemon shutdown 시 daemon metadata뿐 아니라 pinchtab metadata와 session state도 같이 정리하도록 수정했다.
+- store에 `ClearSessions()`를 추가하고, server shutdown 테스트로 상태 정리 동작을 고정했다.
+
+이유:
+
+- daemon을 내린 뒤에도 이전 session/current tab이 남아 있으면 재시작 후 stale 상태가 남아 CLI 사용 경험이 꼬일 수 있기 때문
+
+영향:
+
+- `main`에서는 daemon shutdown 이후 상태가 더 예측 가능하게 정리된다.
+- 신규 환경 auto-install fix와 함께 다음 patch release 가치가 더 커졌다.
+
+후속 작업:
+
+- auto-install / daemon cleanup fix 포함 next patch release 준비
+- headed/headless 이중 smoke
 - `--output text` 기준 doctor 가독성 점검

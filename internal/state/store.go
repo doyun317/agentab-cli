@@ -221,6 +221,13 @@ func (s *Store) UpdateSession(name string, update func(*Session) error) (Session
 	return session, nil
 }
 
+func (s *Store) ClearSessions() error {
+	return s.SaveState(PersistedState{
+		CurrentSession: "",
+		Sessions:       map[string]Session{},
+	})
+}
+
 func (s *Store) ReadDaemonInfo() (DaemonInfo, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

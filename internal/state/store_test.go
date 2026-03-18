@@ -123,3 +123,34 @@ func TestNewStoreCreatesArtifactsDir(t *testing.T) {
 		t.Fatalf("ArtifactsDir() = %q, want artifacts suffix", store.ArtifactsDir())
 	}
 }
+
+func TestClearSessions(t *testing.T) {
+	store, err := NewStore(t.TempDir())
+	if err != nil {
+		t.Fatalf("NewStore() error = %v", err)
+	}
+
+	if err := store.PutSession(Session{
+		Name:         "demo",
+		InstanceID:   "inst_123",
+		CurrentTabID: "tab_1",
+		LastUsedAt:   time.Unix(1700000000, 0).UTC(),
+	}); err != nil {
+		t.Fatalf("PutSession() error = %v", err)
+	}
+
+	if err := store.ClearSessions(); err != nil {
+		t.Fatalf("ClearSessions() error = %v", err)
+	}
+
+	sessions, err := store.ListSessions()
+	if err != nil {
+		t.Fatalf("ListSessions() error = %v", err)
+	}
+	if len(sessions) != 0 {
+		t.Fatalf("ListSessions() = %+v, want empty", sessions)
+	}
+	if _, err := store.CurrentSession(); err != ErrNotFound {
+		t.Fatalf("CurrentSession() error = %v, want %v", err, ErrNotFound)
+	}
+}
