@@ -45,6 +45,7 @@ Global flags:
 Text output notes:
 
 - `agentab --output text doctor` prints a human-friendly health summary instead of raw JSON.
+- `doctor` text output includes `logs`, `daemon log`, `pinchtab log`, and `artifacts` paths for quick troubleshooting.
 - `--output json` keeps the full machine-readable envelope for scripts and agents.
 
 Artifact options:
@@ -53,6 +54,7 @@ Artifact options:
 - `agentab tab snapshot --out /path/to/file.json` writes to an explicit path
 - `agentab tab screenshot --save` writes a managed JPEG artifact
 - `agentab tab pdf --save` writes a managed PDF artifact
+- managed artifact responses include `managed=true`, `relativePath`, and `createdAt`
 
 Further guides:
 

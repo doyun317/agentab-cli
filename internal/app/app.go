@@ -93,6 +93,9 @@ func runDoctor(ctx context.Context, store *state.Store) response.Envelope {
 	daemonInfo, daemonErr := store.ReadDaemonInfo()
 	report := doctorReport{
 		AgentabHome:     store.Root(),
+		LogsDir:         store.LogsDir(),
+		DaemonLogPath:   store.DaemonLogPath(),
+		PinchtabLogPath: store.PinchtabLogPath(),
 		ArtifactsDir:    store.ArtifactsDir(),
 		ManagedBinPath:  inst.ManagedBinaryPath(),
 		PinchtabURL:     pinchURL,

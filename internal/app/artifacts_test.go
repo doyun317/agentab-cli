@@ -57,6 +57,15 @@ func TestSaveSnapshotArtifactWritesJSONFile(t *testing.T) {
 	if !strings.Contains(string(raw), "\"nodes\"") {
 		t.Fatalf("snapshot artifact = %q, want json content", string(raw))
 	}
+	if got := meta["managed"]; got != true {
+		t.Fatalf("meta[managed] = %v, want true", got)
+	}
+	if got := meta["relativePath"]; got != "demo/tab_1/20260317T060000Z-snapshot.json" {
+		t.Fatalf("meta[relativePath] = %v, want managed relative path", got)
+	}
+	if got := meta["createdAt"]; got != "2026-03-17T06:00:00Z" {
+		t.Fatalf("meta[createdAt] = %v, want RFC3339 timestamp", got)
+	}
 }
 
 func TestSaveBinaryArtifactWritesJPEGFile(t *testing.T) {
@@ -87,5 +96,40 @@ func TestSaveBinaryArtifactWritesJPEGFile(t *testing.T) {
 	}
 	if string(raw) != "jpeg-bytes" {
 		t.Fatalf("binary artifact = %q, want jpeg-bytes", string(raw))
+	}
+	if got := meta["managed"]; got != true {
+		t.Fatalf("meta[managed] = %v, want true", got)
+	}
+	if got := meta["relativePath"]; got != "demo/tab_1/20260317T060000Z-screenshot.jpg" {
+		t.Fatalf("meta[relativePath] = %v, want managed relative path", got)
+	}
+	if got := meta["createdAt"]; got != "2026-03-17T06:00:00Z" {
+		t.Fatalf("meta[createdAt] = %v, want RFC3339 timestamp", got)
+	}
+}
+
+func TestSaveSnapshotArtifactExplicitPathIsMarkedUnmanaged(t *testing.T) {
+	store, err := state.NewStore(t.TempDir())
+	if err != nil {
+		t.Fatalf("NewStore() error = %v", err)
+	}
+
+	explicit := filepath.Join(t.TempDir(), "snapshot.json")
+	meta, err := saveSnapshotArtifact(
+		store,
+		"demo",
+		"tab_1",
+		explicit,
+		map[string]any{"nodes": []map[string]any{{"ref": "e1"}}},
+		time.Date(2026, 3, 17, 6, 0, 0, 0, time.UTC),
+	)
+	if err != nil {
+		t.Fatalf("saveSnapshotArtifact() error = %v", err)
+	}
+	if got := meta["managed"]; got != false {
+		t.Fatalf("meta[managed] = %v, want false", got)
+	}
+	if _, exists := meta["relativePath"]; exists {
+		t.Fatalf("meta contains relativePath for explicit artifact: %v", meta["relativePath"])
 	}
 }

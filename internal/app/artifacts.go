@@ -76,6 +76,35 @@ func writeArtifactFile(path string, data []byte) error {
 	return os.WriteFile(path, data, 0o600)
 }
 
+func artifactMeta(
+	store *state.Store,
+	path string,
+	data []byte,
+	mimeType string,
+	kind string,
+	sessionName string,
+	tabID string,
+	now time.Time,
+	managed bool,
+) map[string]any {
+	meta := map[string]any{
+		"path":         path,
+		"bytes":        len(data),
+		"mimeType":     mimeType,
+		"artifactKind": kind,
+		"session":      sessionName,
+		"tabId":        tabID,
+		"managed":      managed,
+		"createdAt":    now.UTC().Format(time.RFC3339),
+	}
+	if managed {
+		if rel, err := filepath.Rel(store.ArtifactsDir(), path); err == nil {
+			meta["relativePath"] = filepath.ToSlash(rel)
+		}
+	}
+	return meta
+}
+
 func snapshotArtifactBytes(payload any) ([]byte, string, string, error) {
 	if text, ok := payload.(string); ok {
 		return []byte(text), "txt", "text/plain; charset=utf-8", nil
@@ -101,20 +130,14 @@ func saveSnapshotArtifact(
 		return nil, err
 	}
 	path := explicitPath
+	managed := path == ""
 	if path == "" {
 		path = defaultArtifactPath(store, sessionName, tabID, "snapshot", ext, now)
 	}
 	if err := writeArtifactFile(path, data); err != nil {
 		return nil, err
 	}
-	return map[string]any{
-		"path":         path,
-		"bytes":        len(data),
-		"mimeType":     mimeType,
-		"artifactKind": "snapshot",
-		"session":      sessionName,
-		"tabId":        tabID,
-	}, nil
+	return artifactMeta(store, path, data, mimeType, "snapshot", sessionName, tabID, now, managed), nil
 }
 
 func saveBinaryArtifact(
@@ -129,18 +152,12 @@ func saveBinaryArtifact(
 	now time.Time,
 ) (map[string]any, error) {
 	path := explicitPath
+	managed := path == ""
 	if path == "" {
 		path = defaultArtifactPath(store, sessionName, tabID, kind, defaultExt, now)
 	}
 	if err := writeArtifactFile(path, data); err != nil {
 		return nil, err
 	}
-	return map[string]any{
-		"path":         path,
-		"bytes":        len(data),
-		"mimeType":     mimeType,
-		"artifactKind": kind,
-		"session":      sessionName,
-		"tabId":        tabID,
-	}, nil
+	return artifactMeta(store, path, data, mimeType, kind, sessionName, tabID, now, managed), nil
 }

@@ -98,6 +98,12 @@ func (s *Store) LogsDir() string      { return s.logsDir }
 func (s *Store) ArtifactsDir() string { return s.artifactsDir }
 func (s *Store) BinDir() string       { return s.binDir }
 func (s *Store) RunDir() string       { return s.runDir }
+func (s *Store) DaemonLogPath() string {
+	return filepath.Join(s.logsDir, "agentab-daemon.log")
+}
+func (s *Store) PinchtabLogPath() string {
+	return filepath.Join(s.logsDir, "pinchtab.log")
+}
 
 func (s *Store) ensureLayout() error {
 	for _, dir := range []string{s.root, s.logsDir, s.artifactsDir, s.binDir, s.runDir} {

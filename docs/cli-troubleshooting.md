@@ -2,7 +2,7 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-18 02:20 UTC
+마지막 갱신: 2026-03-18 02:33 UTC
 목적: `agentab CLI` 사용 중 자주 나오는 설치, daemon, 브라우저, 상태 관련 문제를 빠르게 해결하기 위함
 
 ## 1. 먼저 확인할 것
@@ -198,6 +198,13 @@ agentab daemon start
 - `${AGENTAB_HOME}/logs/agentab-daemon.log`
 - `${AGENTAB_HOME}/logs/pinchtab.log`
 - `${AGENTAB_HOME}/artifacts/`
+
+`doctor`에서 바로 확인 가능한 항목:
+
+- `logs`
+- `daemon log`
+- `pinchtab log`
+- `artifacts`
 
 ## 5. 재현 순서
 

@@ -2,7 +2,7 @@
 
 상태: 초안  
 작성일: 2026-03-17  
-마지막 갱신: 2026-03-18 02:20 UTC
+마지막 갱신: 2026-03-18 02:33 UTC
 목적: `agentab CLI`를 처음 설치하고 실행하는 사용자가 최소한의 브라우저 조작까지 바로 재현할 수 있게 하기 위함
 
 ## 1. 무엇이 설치되는가
@@ -77,6 +77,9 @@ go run ./cmd/agentab doctor
 정상이라면 아래 항목을 확인할 수 있습니다.
 
 - `agentabHome`
+- `logsDir`
+- `daemonLogPath`
+- `pinchtabLogPath`
 - `artifactsDir`
 - `managedBinPath`
 - `pinchtabURL`
@@ -90,8 +93,11 @@ go run ./cmd/agentab doctor
 ```text
 agentab doctor
 home: /home/you/.agentab
+logs: /home/you/.agentab/logs
 artifacts: /home/you/.agentab/artifacts
 managed pinchtab bin: /home/you/.agentab/bin/pinchtab
+daemon log: /home/you/.agentab/logs/agentab-daemon.log
+pinchtab log: /home/you/.agentab/logs/pinchtab.log
 
 chrome
   status: ok
@@ -149,6 +155,12 @@ agentab session stop demo
 agentab tab snapshot --session demo --out /tmp/demo-snapshot.json
 agentab tab screenshot --session demo --out /tmp/demo.jpg
 ```
+
+저장 응답 메타데이터:
+
+- 관리형 저장이면 `managed=true`
+- `${AGENTAB_HOME}/artifacts` 아래 경로면 `relativePath`가 같이 제공됨
+- 생성 시각은 `createdAt`으로 제공됨
 
 ## 7. 새 머신에서 권장 확인 순서
 

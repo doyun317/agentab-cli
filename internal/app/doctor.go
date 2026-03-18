@@ -10,6 +10,9 @@ import (
 
 type doctorReport struct {
 	AgentabHome      string              `json:"agentabHome"`
+	LogsDir          string              `json:"logsDir"`
+	DaemonLogPath    string              `json:"daemonLogPath"`
+	PinchtabLogPath  string              `json:"pinchtabLogPath"`
 	ArtifactsDir     string              `json:"artifactsDir"`
 	ManagedBinPath   string              `json:"managedBinPath"`
 	PinchtabURL      string              `json:"pinchtabURL"`
@@ -30,8 +33,11 @@ func (r doctorReport) RenderText() string {
 
 	b.WriteString("agentab doctor\n")
 	b.WriteString(fmt.Sprintf("home: %s\n", valueOrFallback(r.AgentabHome, "-")))
+	b.WriteString(fmt.Sprintf("logs: %s\n", valueOrFallback(r.LogsDir, "-")))
 	b.WriteString(fmt.Sprintf("artifacts: %s\n", valueOrFallback(r.ArtifactsDir, "-")))
 	b.WriteString(fmt.Sprintf("managed pinchtab bin: %s\n", valueOrFallback(r.ManagedBinPath, "-")))
+	b.WriteString(fmt.Sprintf("daemon log: %s\n", valueOrFallback(r.DaemonLogPath, "-")))
+	b.WriteString(fmt.Sprintf("pinchtab log: %s\n", valueOrFallback(r.PinchtabLogPath, "-")))
 
 	b.WriteString("\nchrome\n")
 	b.WriteString(fmt.Sprintf("  status: %s\n", statusWord(r.ChromeBinFound)))

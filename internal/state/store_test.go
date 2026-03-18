@@ -122,6 +122,12 @@ func TestNewStoreCreatesArtifactsDir(t *testing.T) {
 	if filepath.Base(store.ArtifactsDir()) != "artifacts" {
 		t.Fatalf("ArtifactsDir() = %q, want artifacts suffix", store.ArtifactsDir())
 	}
+	if got := filepath.Base(store.DaemonLogPath()); got != "agentab-daemon.log" {
+		t.Fatalf("DaemonLogPath() = %q, want agentab-daemon.log suffix", got)
+	}
+	if got := filepath.Base(store.PinchtabLogPath()); got != "pinchtab.log" {
+		t.Fatalf("PinchtabLogPath() = %q, want pinchtab.log suffix", got)
+	}
 }
 
 func TestClearSessions(t *testing.T) {

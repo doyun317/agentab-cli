@@ -64,6 +64,7 @@
 
 - [x] `agentab doctor`가 정상 종료한다.
 - [x] `agentabHome`가 올바르게 보인다.
+- [x] `logsDir`, `daemonLogPath`, `pinchtabLogPath`가 올바르게 보인다.
 - [x] `artifactsDir`가 올바르게 보인다.
 - [x] `managedBinPath`가 올바르게 보인다.
 - [x] `pinchtabURL`과 `pinchtabHealthy`가 합리적으로 나온다.
@@ -90,6 +91,7 @@
 - [x] `agentab tab pdf --session demo --save`
 - [x] `${AGENTAB_HOME}/artifacts/...` 아래 파일이 기대한 위치에 생긴다.
 - [x] 명시적 `--out` 경로 저장이 동작한다.
+- [x] 관리형 artifact 응답에 `managed`, `relativePath`, `createdAt`가 포함된다.
 
 ## 5. JSON 계약 검증
 

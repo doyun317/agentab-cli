@@ -128,6 +128,15 @@ func TestRunDoctorReflectsChromeBinOverride(t *testing.T) {
 	if got := data.ChromeBin; got != chromePath {
 		t.Fatalf("runDoctor().Data.ChromeBin = %q, want %q", got, chromePath)
 	}
+	if got := data.LogsDir; got != store.LogsDir() {
+		t.Fatalf("runDoctor().Data.LogsDir = %q, want %q", got, store.LogsDir())
+	}
+	if got := data.DaemonLogPath; got != store.DaemonLogPath() {
+		t.Fatalf("runDoctor().Data.DaemonLogPath = %q, want %q", got, store.DaemonLogPath())
+	}
+	if got := data.PinchtabLogPath; got != store.PinchtabLogPath() {
+		t.Fatalf("runDoctor().Data.PinchtabLogPath = %q, want %q", got, store.PinchtabLogPath())
+	}
 	if got := data.ChromeBinSource; got != "env" {
 		t.Fatalf("runDoctor().Data.ChromeBinSource = %q, want env", got)
 	}
@@ -142,6 +151,9 @@ func TestRunDoctorReflectsChromeBinOverride(t *testing.T) {
 func TestDoctorReportRenderText(t *testing.T) {
 	report := doctorReport{
 		AgentabHome:     "/tmp/agentab",
+		LogsDir:         "/tmp/agentab/logs",
+		DaemonLogPath:   "/tmp/agentab/logs/agentab-daemon.log",
+		PinchtabLogPath: "/tmp/agentab/logs/pinchtab.log",
 		ArtifactsDir:    "/tmp/agentab/artifacts",
 		ManagedBinPath:  "/tmp/agentab/bin/pinchtab",
 		PinchtabURL:     "http://127.0.0.1:43921",
@@ -169,6 +181,9 @@ func TestDoctorReportRenderText(t *testing.T) {
 	for _, want := range []string{
 		"agentab doctor",
 		"home: /tmp/agentab",
+		"logs: /tmp/agentab/logs",
+		"daemon log: /tmp/agentab/logs/agentab-daemon.log",
+		"pinchtab log: /tmp/agentab/logs/pinchtab.log",
 		"chrome",
 		"status: ok",
 		"source: env",
