@@ -2,7 +2,7 @@
 
 상태: CLI 본체 전용 운영 문서  
 최초 작성: 2026-03-17  
-마지막 갱신: 2026-03-18 04:36 UTC
+마지막 갱신: 2026-03-18 05:36 UTC
 문서 목적: `agentab CLI` 본체 제품의 구현 로드맵, 작업 우선순위, 변경 기록, 출시 기준을 LangChain 트랙과 분리해 관리하기 위함
 
 ## 1. 이 문서의 목적
@@ -48,11 +48,11 @@
 - PinchTab subprocess 관리
 - 기본 browser primitive
 
-아직 마감이 필요한 것:
+다음 정리 후보:
 
-- 후속 patch release 범위 결정
-- 액션 smoke를 다음 patch release 검증 기록에 반영
-- 공개 release asset 기준 액션 smoke 승격 여부 결정
+- CLI 예제 명령 셋 정리
+- 릴리스/체크리스트 문서 중복 정리
+- CLI 기준 trace 책임 범위 명시
 
 ## 4. 단계별 로드맵
 
@@ -159,7 +159,7 @@
 - `done` JSON envelope 계약 구현
 - `done` 종료 코드 매핑 구현
 - `done` session / tab 기본 명령 구현
-- `doing` 명령별 text output 경험 점검
+- `done` 명령별 text output 경험 점검
 - `todo` CLI 예제 명령 셋 정리
 - `done` 종료 코드 테스트 보강
 
@@ -174,15 +174,16 @@
 - `done` 잘못된 session / tab / 종료 코드 검증 보강
 - `done` daemon shutdown 시 runtime/session state 정리
 - `done` headed / headless 이중 smoke
-- `todo` lock / timeout / upstream error 문서화 및 검증
+- `done` lock / timeout / upstream error 문서화 및 검증
 - `done` auto-install / daemon cleanup fix 포함 next patch release 발행
+- `done` 운영성 / 액션 하드닝 포함 `v0.1.4` patch release 발행
 
 ### 5.3 운영성과 산출물
 
 - `done` screenshot / snapshot artifact 저장 구조 완성
 - `todo` CLI 기준 trace 책임 범위 확정
-- `todo` logs / artifact 기본 경로 정책 정리
-- `todo` doctor 결과에 artifact 경로 진단 포함 여부 검토
+- `done` logs / artifact 기본 경로 정책 정리
+- `done` doctor 결과에 artifact 경로 진단 포함 여부 검토
 
 ### 5.4 문서와 출시
 
@@ -194,16 +195,18 @@
 - `done` GoReleaser local snapshot workflow 구현
 - `done` git 저장소 생성 후 GitHub Actions release workflow 연결
 - `done` `v0.1.2` patch release 발행
-- `todo` `v0.1.0` 실패 태그 처리 여부 결정
+- `done` `v0.1.0` 실패 태그 정리
+- `done` `v0.1.3` patch release 발행
+- `done` `v0.1.4` patch release 발행
 - `todo` 릴리스/체크리스트 문서 중복 정리
 
 ## 6. 현재 추천 1순위
 
-- `doctor --output text` 가독성 점검
+- `CLI 예제 명령 셋 정리`
 
 이유:
 
-- 릴리스 기준 기능/모드 smoke는 상당 부분 닫혔고, 지금 남은 가장 직접적인 사용자 경험 개선은 사람이 직접 읽는 `doctor --output text`의 품질을 점검하는 것이기 때문
+- 공개 `v0.1.4`까지 안정성/운영성 patch가 한 번 정리됐고, 이제는 사용자가 빠르게 따라 할 수 있는 대표 명령 흐름을 더 선명하게 다듬는 편이 다음 체감 개선에 가깝기 때문
 
 ## 7. 출시 체크리스트 초안
 
@@ -898,6 +901,31 @@
 - 운영성 문서와 실제 릴리스 검증 이력 정리
 - 후속 patch release 범위 결정
 - 필요하면 공개 release asset 기준 액션 smoke 한 번 더 수행
+
+### 2026-03-18 05:36 UTC
+
+변경:
+
+- `v0.1.4` 태그를 생성하고 GitHub Actions release workflow를 성공시켰다.
+- GitHub Release `v0.1.4`에 cross-platform artifact와 checksum이 업로드되었다.
+- 공개 `linux_x86_64` asset을 다시 내려받아 별도 폴더에서 `doctor`와 `scripts/smoke-modes.sh`를 재검증했다.
+- `v0.1.4` 릴리스 노트, 검증 기록, 릴리스 인덱스, 체크리스트를 실제 결과에 맞게 마무리했다.
+
+이유:
+
+- 운영성 개선과 액션 smoke 확대를 묶은 하드닝을 공개 release asset 기준으로 한 번 더 확인하고, 저장소 문서도 같은 기준으로 닫아야 릴리스 기준선이 흔들리지 않기 때문
+
+영향:
+
+- 공개 `v0.1.4` asset 기준으로 `doctor`, `headless`, `headed`, `click/type/fill/press/scroll` smoke까지 재검증된 상태가 되었다.
+- `v0.1.4`가 현재 CLI 공개 기준선으로 확정되었다.
+- 다음 작업은 patch release 범위 결정이 아니라, 남은 문서 polish와 CLI 사용 예제 정리 쪽으로 자연스럽게 이동했다.
+
+후속 작업:
+
+- CLI 예제 명령 셋 정리
+- 릴리스/체크리스트 문서 중복 정리
+- CLI 기준 trace 책임 범위 명시
 
 ### 2026-03-18 04:36 UTC
 
